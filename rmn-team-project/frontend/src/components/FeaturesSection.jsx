@@ -4,42 +4,42 @@ const features = [
   {
     title: 'Helpdesk Support: 24/7',
     description: 'Get round-the-clock assistance for all your IT needs',
-    icon: '',
+    icon: '/assets/icons/customer-service.png',
   },
   {
     title: 'Cybersecurity Services',
     description: 'Protect your data and systems with our advanced security measures',
-    icon: '',
+    icon: '/assets/icons/padlock.png',
   },
   {
     title: 'Network Setup and Management',
     description: 'Optimize your network for seamless connectivity and performance',
-    icon: '',
+    icon: '/assets/icons/computer.png',
   },
   {
     title: 'Bot & Live Chat Support',
     description: 'Get instant support through our AI-powered chat services',
-    icon: '',
+    icon: '/assets/icons/bot.png',
   },
   {
     title: 'On-site IT Support',
     description: 'Professional on-site support for all your IT infrastructure needs',
-    icon: '',
+    icon: '/assets/icons/office-building.png',
   },
   {
     title: 'IT Training',
     description: 'Comprehensive IT training programs for your team',
-    icon: '',
+    icon: '/assets/icons/training.png',
   },
   {
     title: 'Data Backup and Recovery',
     description: 'Secure and reliable data backup and recovery solutions',
-    icon: '',
+    icon: '/assets/icons/disk.png',
   },
   {
     title: 'Cloud Services',
     description: 'Cloud setup, management, and support for businesses.',
-    icon: '',
+    icon: '/assets/icons/service-cloud.png',
   },
 ];
 
@@ -62,8 +62,8 @@ const FeaturesSection = () => {
             {features.map((feature) => (
               <div key={feature.title} className="flex items-start bg-gray-600 bg-opacity-20 backdrop-filter backdrop-blur-lg p-6 rounded-lg border border-gray-300 border-opacity-50">
                 <div className="flex-shrink-0">
-                  <div className="flex items-center justify-center h-12 w-12 rounded-md bg-blue-500 text-white text-2xl">
-                    {feature.icon}
+                  <div className="flex items-center justify-center h-12 w-12 rounded-md bg-gray-200 text-white text-2xl">
+                    <img src={feature.icon} alt={feature.title} className="h-10 w-10 rounded-md" />
                   </div>
                 </div>
                 <div className="ml-4">
