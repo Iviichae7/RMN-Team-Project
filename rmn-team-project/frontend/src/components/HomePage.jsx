@@ -1,5 +1,9 @@
 import React from 'react';
 import FeaturesSection from './FeaturesSection';
+import PricingPlansSection from './PricingPlansSection';
+import FAQSection from './FAQSection';
+import ConsultationSection from './ConsultationSection';
+import Footer from './Footer';
 
 const HomePage = () => {
   return (
@@ -46,7 +50,12 @@ const HomePage = () => {
         </section>
       </main>
       <FeaturesSection />
+      <PricingPlansSection />
+      <FAQSection />
+      <ConsultationSection />
+      <Footer />
     </div>
+    
   );
 }
 
