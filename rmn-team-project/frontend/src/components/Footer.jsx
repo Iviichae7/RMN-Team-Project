@@ -8,20 +8,20 @@ const Footer = () => {
           <p className="text-sm">&copy; 2024 RMN. All Rights Reserved.</p>
         </div>
         <div className="flex space-x-6">
-          <a href="#" className="text-white hover:text-gray-300">
+          <a href="https://x.com" className="text-white hover:text-gray-300">
             <img src="/assets/icons/twitter.png" alt="Twitter" className="h-6 w-6 shadow-lg" />
           </a>
-          <a href="#" className="text-white hover:text-gray-300">
+          <a href="https://instagram.com" className="text-white hover:text-gray-300">
             <img src="/assets/icons/instagram.png" alt="Instagram" className="h-6 w-6 shadow-lg" />
           </a>
-          <a href="#" className="text-white hover:text-gray-300">
+          <a href="https://facebook.com" className="text-white hover:text-gray-300">
             <img src="/assets/icons/facebook.png" alt="Facebook" className="h-6 w-6 shadow-lg" />
           </a>
         </div>
         <div className="flex space-x-4 mt-4">
-          <a href="#" className="text-sm text-white hover:text-gray-300">Privacy Policy</a>
-          <a href="#" className="text-sm text-white hover:text-gray-300">Terms of Service</a>
-          <a href="#" className="text-sm text-white hover:text-gray-300">Contact Us</a>
+          <a href="/" className="text-sm text-white hover:text-gray-300">Privacy Policy</a>
+          <a href="/" className="text-sm text-white hover:text-gray-300">Terms of Service</a>
+          <a href="/" className="text-sm text-white hover:text-gray-300">Contact Us</a>
         </div>
       </div>
     </footer>
