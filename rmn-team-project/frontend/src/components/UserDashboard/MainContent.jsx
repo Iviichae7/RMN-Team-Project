@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { FaEye, FaReply } from 'react-icons/fa';
 
 const MainContent = ({ handleViewClick, handleReplyClick, showCorrespondence, showReply }) => {
   return (
     <main className="flex-1 p-6">
-      <div className="bg-white shadow rounded-lg p-4">
+      <div className="bg-gray-100 shadow-xl rounded-lg p-4">
         <h2 className="text-xl font-bold mb-4">Your Open Tickets</h2>
         <div className="overflow-x-auto">
           <div className="grid grid-cols-6 gap-4 bg-gray-800 text-white p-4 rounded-t-lg">
@@ -16,7 +16,7 @@ const MainContent = ({ handleViewClick, handleReplyClick, showCorrespondence, sh
             <div className="text-center font-semibold">Actions</div>
           </div>
           <div className="space-y-4">
-            <div className="bg-gray-100 rounded-lg p-4 shadow-md grid grid-cols-6 gap-4">
+            <div className="bg-gray-100 rounded-lg p-4 shadow-md grid grid-cols-6 gap-4 border border-black border-opacity-15 mt-4">
               <div className="flex items-center justify-center">
                 <div className="w-8 h-8 bg-red-500 text-white rounded-md flex items-center justify-center">M</div>
               </div>
@@ -26,11 +26,11 @@ const MainContent = ({ handleViewClick, handleReplyClick, showCorrespondence, sh
               <div className="flex items-center justify-center text-center">...</div>
               <div className="flex items-center justify-center">
                 <button onClick={handleViewClick} className="text-blue-500 hover:text-blue-700">
-                  <FaEye /> View
+                  <FaEye />View
                 </button>
               </div>
             </div>
-            <div className="bg-gray-100 rounded-lg p-4 shadow-md grid grid-cols-6 gap-4">
+            <div className="bg-gray-100 rounded-lg p-4 grid grid-cols-6 gap-4 border border-black border-opacity-15">
               <div className="flex items-center justify-center">
                 <div className="w-8 h-8 bg-green-500 text-white rounded-md flex items-center justify-center">R</div>
               </div>
