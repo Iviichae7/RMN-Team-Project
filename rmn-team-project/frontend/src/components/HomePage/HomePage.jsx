@@ -1,39 +1,62 @@
-import React, { useState } from 'react';
-import FeaturesSection from './FeaturesSection';
-import PricingPlansSection from './PricingPlansSection';
-import FAQSection from './FAQSection';
-import ConsultationSection from './ConsultationSection';
-import Footer from './Footer';
-import Navbar from './Navbar';
-import LoginModal from './LoginModal';
+import React, { useState } from "react";
+import FeaturesSection from "./FeaturesSection";
+import PricingPlansSection from "./PricingPlansSection";
+import FAQSection from "./FAQSection";
+import ConsultationSection from "./ConsultationSection";
+import Footer from "./Footer";
+import Navbar from "./Navbar";
+import LoginModal from "./LoginModal";
+import RegisterModal from "./RegisterModal";
 
 const HomePage = () => {
-  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [loginModalIsOpen, setLoginModalIsOpen] = useState(false);
+  const [registerModalIsOpen, setRegisterModalIsOpen] = useState(false);
 
-  const openModal = () => setModalIsOpen(true);
-  const closeModal = () => setModalIsOpen(false);
+  const openLoginModal = () => setLoginModalIsOpen(true);
+  const closeLoginModal = () => setLoginModalIsOpen(false);
+
+  const openRegisterModal = () => setRegisterModalIsOpen(true);
+  const closeRegisterModal = () => setRegisterModalIsOpen(false);
 
   const handleGoogleLogin = () => {
-    window.location.href = 'http://localhost:3001/auth/google';
+    window.location.href = "http://localhost:3001/auth/google";
   };
 
   return (
-    <div className={`transition-filter duration-300 ${modalIsOpen ? 'blur-sm' : ''}`}>
-      <Navbar openModal={openModal} />
-      
+    <div
+      className={`transition-filter duration-300 ${
+        loginModalIsOpen || registerModalIsOpen ? "blur-sm" : ""
+      }`}
+    >
+      <Navbar
+        openModal={openLoginModal}
+        openRegisterModal={openRegisterModal}
+      />
       {/* main section */}
       <main className="flex flex-col items-center justify-center min-h-screen py-2">
         <section className="flex flex-col lg:flex-row items-center text-center lg:text-left">
           <div className="lg:w-1/2 px-4">
-            <h1 className="text-4xl font-bold mb-4">Professional IT Support Services</h1>
-            <p className="text-lg mb-6">Your Trusted Partner for Reliable IT Solutions</p>
+            <h1 className="text-4xl font-bold mb-4">
+              Professional IT Support Services
+            </h1>
+            <p className="text-lg mb-6">
+              Your Trusted Partner for Reliable IT Solutions
+            </p>
             <div className="flex justify-center lg:justify-start mb-6">
-              <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-4">Get Started</button>
-              <button className="bg-transparent hover:bg-gray-200 text-black font-bold py-2 px-4 rounded border border-gray-500">Learn More</button>
+              <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-4">
+                Get Started
+              </button>
+              <button className="bg-transparent hover:bg-gray-200 text-black font-bold py-2 px-4 rounded border border-gray-500">
+                Learn More
+              </button>
             </div>
           </div>
           <div className="lg:w-1/2 px-4">
-            <img src="/assets/landingpagevector.png" alt="3D Illustration" className="w-full h-full object-cover"/>
+            <img
+              src="/assets/landingpagevector.png"
+              alt="3D Illustration"
+              className="w-full h-full object-cover"
+            />
           </div>
         </section>
       </main>
@@ -42,9 +65,18 @@ const HomePage = () => {
       <FAQSection />
       <ConsultationSection />
       <Footer />
-      <LoginModal isOpen={modalIsOpen} onRequestClose={closeModal} handleGoogleLogin={handleGoogleLogin} />
+      <LoginModal
+        isOpen={loginModalIsOpen}
+        onRequestClose={closeLoginModal}
+        handleGoogleLogin={handleGoogleLogin}
+      />
+      <RegisterModal
+        isOpen={registerModalIsOpen}
+        onRequestClose={closeRegisterModal}
+        openLoginModal={openLoginModal}
+      />
     </div>
   );
-}
+};
 
 export default HomePage;

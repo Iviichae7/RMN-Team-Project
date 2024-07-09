@@ -1,10 +1,55 @@
-import React from 'react';
-import Modal from 'react-modal';
-import { FaTimes } from 'react-icons/fa';
+import React, { useState } from "react";
+import Modal from "react-modal";
+import { FaTimes } from "react-icons/fa";
+import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 
-Modal.setAppElement('#root');
+Modal.setAppElement("#root");
 
 const LoginModal = ({ isOpen, onRequestClose, handleGoogleLogin }) => {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(
+        "http://localhost:3001/login",
+        formData
+      );
+      if (response.status === 200) {
+        toast.success("Login Successful!", {
+          position: "bottom-left",
+        });
+        setTimeout(() => {
+          onRequestClose();
+          navigate("/dashboard");
+        }, 2000);
+      } else {
+        toast.error("Login failed. Please try again.", {
+          position: "bottom-left",
+        });
+      }
+    } catch (error) {
+      toast.error("Login failed. Please try again.", {
+        position: "bottom-left",
+      });
+    }
+  };
+
   return (
     <Modal
       isOpen={isOpen}
@@ -16,29 +61,61 @@ const LoginModal = ({ isOpen, onRequestClose, handleGoogleLogin }) => {
       <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">Sign in</h2>
-          <button onClick={onRequestClose} className="text-gray-500 hover:text-gray-700">
+          <button
+            onClick={onRequestClose}
+            className="text-gray-500 hover:text-gray-700"
+          >
             <FaTimes />
           </button>
         </div>
-        <button onClick={handleGoogleLogin} className="w-full py-2 rounded-md flex items-center justify-center mb-4 border border-gray-300">
-          <img src="/assets/icons/google.png" alt="Google Icon" className="w-4 h-4 mr-2" />
+        <button
+          onClick={handleGoogleLogin}
+          className="w-full py-2 rounded-md flex items-center justify-center mb-4 border border-gray-300"
+        >
+          <img
+            src="/assets/icons/google.png"
+            alt="Google Icon"
+            className="w-4 h-4 mr-2"
+          />
           <span>Continue with Google</span>
         </button>
         <div className="flex justify-center mb-4">
           <span className="text-gray-500">or</span>
         </div>
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <input type="email" className="w-full p-2 border rounded-md" placeholder="Your email" />
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full p-2 border rounded-md"
+              placeholder="Your email"
+            />
           </div>
           <div className="mb-4">
-            <input type="password" className="w-full p-2 border rounded-md" placeholder="Your password" />
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full p-2 border rounded-md"
+              placeholder="Your password"
+            />
           </div>
-          <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded-md">Login</button>
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white py-2 rounded-md"
+          >
+            Login
+          </button>
         </form>
         <div className="mt-4 text-center">
-          <a href="/register" className="text-blue-500 hover:underline">Don't have an account? Register</a>
+          <a href="/register" className="text-blue-500 hover:underline">
+            Don't have an account? Register
+          </a>
         </div>
+        <ToastContainer />
       </div>
     </Modal>
   );
