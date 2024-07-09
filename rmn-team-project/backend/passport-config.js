@@ -75,9 +75,9 @@ passport.use(
         const user = rows[0];
 
         if (!user.password) {
-          console.error("Password not found for user:", user);
           return done(null, false, {
-            message: "Password not set for this user.",
+            message:
+              "Password not set for this user. Please log in using Google.",
           });
         }
 
