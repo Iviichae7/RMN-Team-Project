@@ -6,6 +6,7 @@ import ContactUs from "./components/HomePage/ContactUs.jsx";
 import Dashboard from "./components/UserDashboard/Dashboard.jsx";
 import LoginModal from "./components/HomePage/LoginModal";
 import RegisterModal from "./components/HomePage/RegisterModal";
+import AdminDashboard from "./components/AdminDashboard/AdminDashboard.jsx";
 
 function App() {
   const [loginModalIsOpen, setLoginModalIsOpen] = useState(false);
@@ -30,6 +31,7 @@ function App() {
             element={<ContactUs openModal={openLoginModal} />}
           />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/admin/*" element={<AdminDashboard />} />
         </Routes>
         <LoginModal
           isOpen={loginModalIsOpen}

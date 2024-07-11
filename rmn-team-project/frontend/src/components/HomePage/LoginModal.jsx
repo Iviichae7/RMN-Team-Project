@@ -28,15 +28,24 @@ const LoginModal = ({ isOpen, onRequestClose, handleGoogleLogin }) => {
     try {
       const response = await axios.post(
         "http://localhost:3001/login",
-        formData
+        formData,
+        { withCredentials: true }
       );
       if (response.status === 200) {
         toast.success("Login Successful!", {
           position: "bottom-left",
         });
-        setTimeout(() => {
+        setTimeout(async () => {
           onRequestClose();
-          navigate("/dashboard");
+          const roleResponse = await axios.get(
+            "http://localhost:3001/api/userRole",
+            { withCredentials: true }
+          );
+          if (roleResponse.data.role === "admin") {
+            navigate("/admin");
+          } else {
+            navigate("/dashboard");
+          }
         }, 2000);
       } else {
         toast.error("Login failed. Please try again.", {
