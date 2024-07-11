@@ -10,9 +10,9 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser(async (id, done) => {
   try {
-    const [rows] = await db
-      .promise()
-      .query("SELECT * FROM Users WHERE User_ID = ?", [id]);
+    const [rows] = await db.query("SELECT * FROM Users WHERE User_ID = ?", [
+      id,
+    ]);
     done(null, rows[0]);
   } catch (error) {
     done(error, null);
@@ -32,9 +32,10 @@ passport.use(
         const lastName = profile.name.familyName;
         const email = profile.emails[0].value;
 
-        const [existingUser] = await db
-          .promise()
-          .query("SELECT * FROM Users WHERE Email = ?", [email]);
+        const [existingUser] = await db.query(
+          "SELECT * FROM Users WHERE Email = ?",
+          [email]
+        );
 
         if (existingUser.length > 0) {
           return done(null, existingUser[0]);
@@ -43,10 +44,11 @@ passport.use(
             "INSERT INTO Users (First_Name, Second_Name, Email, Phone) VALUES (?, ?, ?, ?)";
           const values = [firstName, lastName, email, ""];
 
-          const [result] = await db.promise().query(query, values);
-          const [newUser] = await db
-            .promise()
-            .query("SELECT * FROM Users WHERE User_ID = ?", [result.insertId]);
+          const [result] = await db.query(query, values);
+          const [newUser] = await db.query(
+            "SELECT * FROM Users WHERE User_ID = ?",
+            [result.insertId]
+          );
           return done(null, newUser[0]);
         }
       } catch (error) {
@@ -65,9 +67,9 @@ passport.use(
     },
     async (email, password, done) => {
       try {
-        const [rows] = await db
-          .promise()
-          .query("SELECT * FROM Users WHERE Email = ?", [email]);
+        const [rows] = await db.query("SELECT * FROM Users WHERE Email = ?", [
+          email,
+        ]);
         if (rows.length === 0) {
           return done(null, false, { message: "Incorrect email." });
         }
