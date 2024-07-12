@@ -8,7 +8,13 @@ import { useNavigate } from "react-router-dom";
 
 Modal.setAppElement("#root");
 
-const LoginModal = ({ isOpen, onRequestClose, handleGoogleLogin }) => {
+const LoginModal = ({
+  isOpen,
+  onRequestClose,
+  handleGoogleLogin,
+  handleMicrosoftLogin,
+  openRegisterModal,
+}) => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -84,9 +90,20 @@ const LoginModal = ({ isOpen, onRequestClose, handleGoogleLogin }) => {
           <img
             src="/assets/icons/google.png"
             alt="Google Icon"
-            className="w-4 h-4 mr-2"
+            className="w-6 h-6 mr-2"
           />
           <span>Continue with Google</span>
+        </button>
+        <button
+          onClick={handleMicrosoftLogin}
+          className="w-full py-2 rounded-md flex items-center justify-center mb-4 border border-gray-300"
+        >
+          <img
+            src="/assets/icons/microsoft-icon.png"
+            alt="Microsoft Icon"
+            className="w-10 h-8"
+          />
+          <span>Continue with Microsoft</span>
         </button>
         <div className="flex justify-center mb-4">
           <span className="text-gray-500">or</span>
@@ -120,7 +137,14 @@ const LoginModal = ({ isOpen, onRequestClose, handleGoogleLogin }) => {
           </button>
         </form>
         <div className="mt-4 text-center">
-          <a href="/register" className="text-blue-500 hover:underline">
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              openRegisterModal();
+            }}
+            className="text-blue-500 hover:underline"
+          >
             Don't have an account? Register
           </a>
         </div>

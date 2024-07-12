@@ -22,6 +22,10 @@ const HomePage = () => {
     window.location.href = "http://localhost:3001/auth/google";
   };
 
+  const handleMicrosoftLogin = () => {
+    window.location.href = "http://localhost:3001/auth/microsoft";
+  };
+
   return (
     <div
       className={`transition-filter duration-300 ${
@@ -69,6 +73,8 @@ const HomePage = () => {
         isOpen={loginModalIsOpen}
         onRequestClose={closeLoginModal}
         handleGoogleLogin={handleGoogleLogin}
+        handleMicrosoftLogin={handleMicrosoftLogin}
+        openRegisterModal={openRegisterModal}
       />
       <RegisterModal
         isOpen={registerModalIsOpen}

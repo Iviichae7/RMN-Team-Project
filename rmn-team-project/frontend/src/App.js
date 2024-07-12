@@ -36,10 +36,12 @@ function App() {
         <LoginModal
           isOpen={loginModalIsOpen}
           onRequestClose={closeLoginModal}
+          openRegisterModal={openRegisterModal}
         />
         <RegisterModal
           isOpen={registerModalIsOpen}
           onRequestClose={closeRegisterModal}
+          openLoginModal={openLoginModal}
         />
       </div>
     </Router>
