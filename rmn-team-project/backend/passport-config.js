@@ -1,8 +1,10 @@
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const LocalStrategy = require("passport-local").Strategy;
+const AzureAdOAuth2Strategy = require("passport-azure-ad-oauth2");
 const bcrypt = require("bcrypt");
 const db = require("./dbconfig");
+const jwt = require("jsonwebtoken");
 
 passport.serializeUser((user, done) => {
   done(null, user.User_ID);
@@ -60,6 +62,54 @@ passport.use(
 );
 
 passport.use(
+  new AzureAdOAuth2Strategy(
+    {
+      clientID: process.env.MICROSOFT_CLIENT_ID,
+      clientSecret: process.env.MICROSOFT_CLIENT_SECRET,
+      callbackURL: "http://localhost:3001/auth/microsoft/callback",
+      authorizationURL:
+        "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+      tokenURL: "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+      scope: ["openid", "profile", "email"],
+    },
+    async (accessToken, refreshToken, params, profile, done) => {
+      try {
+        const decodedToken = jwt.decode(params.id_token);
+
+        const email =
+          decodedToken.preferred_username || decodedToken.email || "Unknown";
+        const name = decodedToken.name || "Unknown Unknown";
+
+        const [firstName, ...rest] = name.split(" ");
+        const lastName = rest.join(" ") || "Unknown";
+
+        const [existingUser] = await db.query(
+          "SELECT * FROM Users WHERE Email = ?",
+          [email]
+        );
+
+        if (existingUser.length > 0) {
+          return done(null, existingUser[0]);
+        } else {
+          const query =
+            "INSERT INTO Users (First_Name, Second_Name, Email, Phone) VALUES (?, ?, ?, ?)";
+          const values = [firstName, lastName, email, ""];
+
+          const [result] = await db.query(query, values);
+          const [newUser] = await db.query(
+            "SELECT * FROM Users WHERE User_ID = ?",
+            [result.insertId]
+          );
+          return done(null, newUser[0]);
+        }
+      } catch (error) {
+        return done(error, null);
+      }
+    }
+  )
+);
+
+passport.use(
   new LocalStrategy(
     {
       usernameField: "email",
@@ -79,7 +129,7 @@ passport.use(
         if (!user.password) {
           return done(null, false, {
             message:
-              "Password not set for this user. Please log in using Google.",
+              "Password not set for this user. Please log in using Google or Microsoft.",
           });
         }
 

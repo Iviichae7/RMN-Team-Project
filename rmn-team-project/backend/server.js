@@ -57,6 +57,20 @@ app.get(
   }
 );
 
+app.get(
+  "/auth/microsoft",
+  passport.authenticate("azure_ad_oauth2", {
+    scope: ["openid", "profile", "email"],
+  })
+);
+app.get(
+  "/auth/microsoft/callback",
+  passport.authenticate("azure_ad_oauth2", { failureRedirect: "/login" }),
+  (req, res) => {
+    res.redirect("http://localhost:3000/dashboard");
+  }
+);
+
 app.get("/logout", (req, res) => {
   req.logout((err) => {
     if (err) {
