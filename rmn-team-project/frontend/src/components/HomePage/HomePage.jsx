@@ -11,22 +11,28 @@ import RegisterModal from "./RegisterModal";
 const HomePage = () => {
   const [loginModalIsOpen, setLoginModalIsOpen] = useState(false);
   const [registerModalIsOpen, setRegisterModalIsOpen] = useState(false);
+  const [redirectToPlans, setRedirectToPlans] = useState(false);
 
-  const openLoginModal = () => setLoginModalIsOpen(true);
+  const openLoginModal = (isPlanRedirect = false) => {
+    setLoginModalIsOpen(true);
+    setRedirectToPlans(isPlanRedirect);
+  };
+
   const closeLoginModal = () => setLoginModalIsOpen(false);
 
   const openRegisterModal = () => {
     setLoginModalIsOpen(false);
     setRegisterModalIsOpen(true);
   };
+
   const closeRegisterModal = () => setRegisterModalIsOpen(false);
 
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:3001/auth/google";
+    window.location.href = `http://localhost:3001/auth/google?redirectToPlans=${redirectToPlans}`;
   };
 
   const handleMicrosoftLogin = () => {
-    window.location.href = "http://localhost:3001/auth/microsoft";
+    window.location.href = `http://localhost:3001/auth/microsoft?redirectToPlans=${redirectToPlans}`;
   };
 
   return (
@@ -78,6 +84,7 @@ const HomePage = () => {
         handleGoogleLogin={handleGoogleLogin}
         handleMicrosoftLogin={handleMicrosoftLogin}
         openRegisterModal={openRegisterModal}
+        redirectToPlans={redirectToPlans}
       />
       <RegisterModal
         isOpen={registerModalIsOpen}

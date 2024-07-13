@@ -14,6 +14,7 @@ const LoginModal = ({
   handleGoogleLogin,
   handleMicrosoftLogin,
   openRegisterModal,
+  redirectToPlans,
 }) => {
   const [formData, setFormData] = useState({
     email: "",
@@ -49,6 +50,8 @@ const LoginModal = ({
           );
           if (roleResponse.data.role === "admin") {
             navigate("/admin");
+          } else if (redirectToPlans) {
+            navigate("/dashboard/plans");
           } else {
             navigate("/dashboard");
           }

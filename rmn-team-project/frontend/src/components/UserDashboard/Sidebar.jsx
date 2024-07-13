@@ -1,5 +1,6 @@
-import React from 'react';
-import { FaBars, FaChartLine, FaTicketAlt } from 'react-icons/fa';
+import React from "react";
+import { FaBars, FaChartLine, FaTicketAlt } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const Sidebar = () => {
   return (
@@ -8,15 +9,24 @@ const Sidebar = () => {
         <FaBars className="text-xl" />
       </div>
       <nav className="flex flex-col flex-grow p-4 space-y-4">
-        <a href="/" className="flex items-center p-2 hover:bg-gray-700 rounded">
+        <Link
+          to="/dashboard"
+          className="flex items-center p-2 hover:bg-gray-700 rounded"
+        >
           <FaChartLine className="mr-3" /> Dashboard
-        </a>
-        <a href="/" className="flex items-center p-2 hover:bg-gray-700 rounded">
+        </Link>
+        <Link
+          to="/dashboard/plans"
+          className="flex items-center p-2 hover:bg-gray-700 rounded"
+        >
           <FaTicketAlt className="mr-3" /> Plans
-        </a>
-        <a href="/" className="flex items-center p-2 hover:bg-gray-700 rounded">
+        </Link>
+        <Link
+          to="/dashboard/create-ticket"
+          className="flex items-center p-2 hover:bg-gray-700 rounded"
+        >
           <FaTicketAlt className="mr-3" /> Create a Ticket
-        </a>
+        </Link>
       </nav>
     </div>
   );

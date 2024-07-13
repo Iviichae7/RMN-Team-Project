@@ -93,7 +93,7 @@ const PricingPlansSection = ({ openLoginModal }) => {
                 </ul>
                 <button
                   className={`mt-auto py-2 px-4 rounded-md ${plan.buttonClass}`}
-                  onClick={openLoginModal}
+                  onClick={() => openLoginModal(true)}
                 >
                   {plan.buttonText}
                 </button>

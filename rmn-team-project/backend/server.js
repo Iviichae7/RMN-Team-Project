@@ -45,29 +45,50 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.get(
-  "/auth/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
-);
+app.get("/auth/google", (req, res, next) => {
+  const { redirectToPlans } = req.query;
+  const state = redirectToPlans === "true" ? "redirectToPlans" : "noRedirect";
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+    state,
+  })(req, res, next);
+});
+
 app.get(
   "/auth/google/callback",
-  passport.authenticate("google", { failureRedirect: "/login" }),
+  passport.authenticate("google", { failureRedirect: "/login", session: true }),
   (req, res) => {
-    res.redirect("http://localhost:3000/dashboard");
+    const redirectToPlans = req.query.state === "redirectToPlans";
+    if (redirectToPlans) {
+      res.redirect("http://localhost:3000/dashboard/plans");
+    } else {
+      res.redirect("http://localhost:3000/dashboard");
+    }
   }
 );
 
-app.get(
-  "/auth/microsoft",
+app.get("/auth/microsoft", (req, res, next) => {
+  const { redirectToPlans } = req.query;
+  const state = redirectToPlans === "true" ? "redirectToPlans" : "noRedirect";
   passport.authenticate("azure_ad_oauth2", {
     scope: ["openid", "profile", "email"],
-  })
-);
+    state,
+  })(req, res, next);
+});
+
 app.get(
   "/auth/microsoft/callback",
-  passport.authenticate("azure_ad_oauth2", { failureRedirect: "/login" }),
+  passport.authenticate("azure_ad_oauth2", {
+    failureRedirect: "/login",
+    session: true,
+  }),
   (req, res) => {
-    res.redirect("http://localhost:3000/dashboard");
+    const redirectToPlans = req.query.state === "redirectToPlans";
+    if (redirectToPlans) {
+      res.redirect("http://localhost:3000/dashboard/plans");
+    } else {
+      res.redirect("http://localhost:3000/dashboard");
+    }
   }
 );
 

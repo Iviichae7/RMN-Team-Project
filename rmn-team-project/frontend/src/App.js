@@ -11,8 +11,13 @@ import AdminDashboard from "./components/AdminDashboard/AdminDashboard.jsx";
 function App() {
   const [loginModalIsOpen, setLoginModalIsOpen] = useState(false);
   const [registerModalIsOpen, setRegisterModalIsOpen] = useState(false);
+  const [redirectToPlans, setRedirectToPlans] = useState(false);
 
-  const openLoginModal = () => setLoginModalIsOpen(true);
+  const openLoginModal = (isPlanRedirect = false) => {
+    setLoginModalIsOpen(true);
+    setRedirectToPlans(isPlanRedirect);
+  };
+
   const closeLoginModal = () => setLoginModalIsOpen(false);
   const openRegisterModal = () => setRegisterModalIsOpen(true);
   const closeRegisterModal = () => setRegisterModalIsOpen(false);
@@ -21,22 +26,23 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
-          <Route path="/" element={<HomePage openModal={openLoginModal} />} />
           <Route
-            path="/about"
-            element={<AboutUs openModal={openLoginModal} />}
+            path="/"
+            element={<HomePage openLoginModal={openLoginModal} />}
           />
+          <Route path="/about" element={<AboutUs />} />
+          <Route path="/contact" element={<ContactUs />} />
           <Route
-            path="/contact"
-            element={<ContactUs openModal={openLoginModal} />}
+            path="/dashboard/*"
+            element={<Dashboard redirectToPlans={redirectToPlans} />}
           />
-          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/admin/*" element={<AdminDashboard />} />
         </Routes>
         <LoginModal
           isOpen={loginModalIsOpen}
           onRequestClose={closeLoginModal}
           openRegisterModal={openRegisterModal}
+          redirectToPlans={redirectToPlans}
         />
         <RegisterModal
           isOpen={registerModalIsOpen}

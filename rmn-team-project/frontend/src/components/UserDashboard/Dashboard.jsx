@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Sidebar from './Sidebar';
-import Header from './Header';
-import MainContent from './MainContent';
-import Chat from './Chat';
-import Footer from './Footer';
-import SignOutModal from './SignOutModal';
+import React, { useState, useEffect } from "react";
+import { useNavigate, Routes, Route } from "react-router-dom";
+import Sidebar from "./Sidebar";
+import Header from "./Header";
+import MainContent from "./MainContent";
+import Chat from "./Chat";
+import Footer from "./Footer";
+import SignOutModal from "./SignOutModal";
+import Plans from "./Plans";
 
-const Dashboard = () => {
+const Dashboard = ({ redirectToPlans }) => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [showCorrespondence, setShowCorrespondence] = useState(false);
   const [showReply, setShowReply] = useState(false);
@@ -32,24 +33,38 @@ const Dashboard = () => {
 
   const handleSignOutConfirm = () => {
     setIsSignOutModalOpen(false);
-    navigate('/');
+    navigate("/");
   };
 
   const handleSignOutCancel = () => {
     setIsSignOutModalOpen(false);
   };
 
+  useEffect(() => {
+    if (redirectToPlans) {
+      navigate("/dashboard/plans");
+    }
+  }, [redirectToPlans, navigate]);
+
   return (
     <div className="flex min-h-screen bg-gray-10">
       <Sidebar />
       <div className="flex-1 flex flex-col">
         <Header handleSignOut={handleSignOutClick} />
-        <MainContent 
-          handleViewClick={handleViewClick} 
-          handleReplyClick={handleReplyClick} 
-          showCorrespondence={showCorrespondence} 
-          showReply={showReply} 
-        />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <MainContent
+                handleViewClick={handleViewClick}
+                handleReplyClick={handleReplyClick}
+                showCorrespondence={showCorrespondence}
+                showReply={showReply}
+              />
+            }
+          />
+          <Route path="plans" element={<Plans />} />
+        </Routes>
         <Chat isChatOpen={isChatOpen} toggleChat={toggleChat} />
         <Footer />
         <SignOutModal
