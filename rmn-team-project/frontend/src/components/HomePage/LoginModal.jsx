@@ -65,6 +65,12 @@ const LoginModal = ({
     }
   };
 
+  const handleOpenRegisterModal = (e) => {
+    e.preventDefault();
+    onRequestClose();
+    openRegisterModal();
+  };
+
   return (
     <Modal
       isOpen={isOpen}
@@ -139,10 +145,7 @@ const LoginModal = ({
         <div className="mt-4 text-center">
           <a
             href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              openRegisterModal();
-            }}
+            onClick={handleOpenRegisterModal}
             className="text-blue-500 hover:underline"
           >
             Don't have an account? Register

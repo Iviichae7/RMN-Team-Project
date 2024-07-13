@@ -15,7 +15,10 @@ const HomePage = () => {
   const openLoginModal = () => setLoginModalIsOpen(true);
   const closeLoginModal = () => setLoginModalIsOpen(false);
 
-  const openRegisterModal = () => setRegisterModalIsOpen(true);
+  const openRegisterModal = () => {
+    setLoginModalIsOpen(false);
+    setRegisterModalIsOpen(true);
+  };
   const closeRegisterModal = () => setRegisterModalIsOpen(false);
 
   const handleGoogleLogin = () => {
