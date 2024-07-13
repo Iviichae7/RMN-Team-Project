@@ -212,3 +212,83 @@ io.on("connection", (socket) => {
     io.emit("chat message", msg);
   });
 });
+
+//Database Connections - Tickets
+
+//Submit Ticket
+app.post('/submit-ticket', (req, res) => {
+  const { title, description, category, priority, user, admin } = req.body;
+
+  const submitTicketQuery = 'CALL insertTicket(?, ?, ?, ?, ?)';
+  db.query(submitTicketQuery, [title, description, category, priority, user], (err, result) => {
+    if (err) {
+      console.error('Error executing query:', err);
+      res.status(500).send('Server Error');
+      return;
+    }
+    res.send('Ticket submitted successfully');
+  });
+});
+
+//Get Ticket via ID
+app.get('/ticket/:id', (req, res) => {
+  const ticketId = req.params.id;
+
+  const getTicketQuery = 'CALL getTicket(?)';
+  db.query(getTicketQuery, [ticketId], (err, results) => {
+    if (err) {
+      console.error('Error executing query:', err);
+      res.status(500).send('Server Error');
+      return;
+    }
+
+    if (results.length === 0) {
+      res.status(404).send('Ticket not found');
+      return;
+    }
+
+    res.json(results[0]);
+  });
+});
+
+//Get Ticket via Admin ID - To display on Admin Dashboard
+app.get('/ticket/:adminid', (req, res) => {
+  const adminID = req.params.adminid;
+
+  const getAdminTicketQuery = 'CALL adminTickets(?)';
+  db.query(getAdminTicketQuery, [adminID], (err, results) => {
+    if (err) {
+      console.error('Error executing query:', err);
+      res.status(500).send('Server Error');
+      return;
+    }
+
+    if (results.length === 0) {
+      res.status(404).send('No Tickets Available');
+      return;
+    }
+
+    res.json(results[0]);
+  });
+});
+
+//Get Ticket via User ID - To display on User Dashboard
+app.get('/ticket/:userid', (req, res) => {
+  const userID = req.params.userid;
+
+  const getUserTicketQuery = 'CALL userTickets(?)';
+  db.query(getUserTicketQuery, [userID], (err, results) => {
+    if (err) {
+      console.error('Error executing query:', err);
+      res.status(500).send('Server Error');
+      return;
+    }
+
+    if (results.length === 0) {
+      res.status(404).send('No Tickets Available');
+      return;
+    }
+
+    res.json(results[0]);
+  });
+});
