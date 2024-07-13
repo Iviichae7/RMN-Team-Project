@@ -68,7 +68,7 @@ const HomePage = () => {
         </section>
       </main>
       <FeaturesSection />
-      <PricingPlansSection />
+      <PricingPlansSection openLoginModal={openLoginModal} />
       <FAQSection />
       <ConsultationSection />
       <Footer />
