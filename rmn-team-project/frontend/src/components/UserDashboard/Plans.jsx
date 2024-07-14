@@ -2,6 +2,7 @@ import React from "react";
 
 const plans = [
   {
+    id: 1,
     name: "Basic",
     price: "99",
     period: "month",
@@ -15,6 +16,7 @@ const plans = [
     buttonClass: "bg-blue-500 text-white hover:bg-blue-700",
   },
   {
+    id: 2,
     name: "Plus",
     price: "149",
     period: "month",
@@ -29,6 +31,7 @@ const plans = [
     buttonClass: "bg-blue-500 text-white hover:bg-blue-700",
   },
   {
+    id: 3,
     name: "Pro",
     price: "299",
     period: "month",
@@ -44,7 +47,7 @@ const plans = [
   },
 ];
 
-const Plans = ({ setCartItems, setSelectedPlan, selectedPlan }) => {
+const Plans = ({ setCartItems, setSelectedPlan, selectedPlan, userId }) => {
   const handleBuyPlan = (plan) => {
     setSelectedPlan(plan);
     setCartItems(1);
