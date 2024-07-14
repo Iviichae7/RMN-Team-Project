@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, Routes, Route } from "react-router-dom";
+import { useNavigate, Routes, Route, useLocation } from "react-router-dom";
+import axios from "../../config/axiosConfig";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import MainContent from "./MainContent";
 import Chat from "./Chat";
 import Footer from "./Footer";
-import SignOutModal from "./SignOutModal";
 import Plans from "./Plans";
+import Payment from "./Payment";
+import SignOutModal from "./SignOutModal";
 
 const Dashboard = ({ redirectToPlans }) => {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -15,7 +17,9 @@ const Dashboard = ({ redirectToPlans }) => {
   const [isSignOutModalOpen, setIsSignOutModalOpen] = useState(false);
   const [cartItems, setCartItems] = useState(0);
   const [selectedPlan, setSelectedPlan] = useState(null);
+  const [userId, setUserId] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const toggleChat = () => {
     setIsChatOpen(!isChatOpen);
@@ -48,11 +52,38 @@ const Dashboard = ({ redirectToPlans }) => {
   };
 
   const purchasePlan = () => {
+    if (selectedPlan) {
+      const params = new URLSearchParams({
+        planId: selectedPlan.id,
+        planName: selectedPlan.name,
+        planPrice: selectedPlan.price,
+        userId: userId,
+      }).toString();
+      navigate(`/dashboard/payment?${params}`);
+    } else {
+      alert("No plan selected");
+    }
+  };
+
+  const clearCart = () => {
     setSelectedPlan(null);
     setCartItems(0);
   };
 
   useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get("/api/user");
+        if (response.data && response.data.userId) {
+          setUserId(response.data.userId);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
+
     if (redirectToPlans) {
       navigate("/dashboard/plans");
     }
@@ -68,6 +99,8 @@ const Dashboard = ({ redirectToPlans }) => {
           selectedPlan={selectedPlan}
           removePlan={removePlan}
           purchasePlan={purchasePlan}
+          clearCart={clearCart}
+          currentRoute={location.pathname}
         />
         <Routes>
           <Route
@@ -91,6 +124,7 @@ const Dashboard = ({ redirectToPlans }) => {
               />
             }
           />
+          <Route path="payment" element={<Payment clearCart={clearCart} />} />
         </Routes>
         <Chat isChatOpen={isChatOpen} toggleChat={toggleChat} />
         <Footer />

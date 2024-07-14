@@ -7,11 +7,17 @@ const Header = ({
   selectedPlan,
   removePlan,
   purchasePlan,
+  currentRoute,
 }) => {
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   const toggleCart = () => {
     setIsCartOpen(!isCartOpen);
+  };
+
+  const handlePurchase = () => {
+    purchasePlan();
+    setIsCartOpen(false);
   };
 
   return (
@@ -24,13 +30,15 @@ const Header = ({
         />
       </div>
       <div className="flex-1 flex justify-center">
-        <button
-          className="bg-gradient-to-r from-blue-400 to-blue-600 text-white px-6 py-3 rounded-full shadow-lg 
+        {currentRoute === "/dashboard" && (
+          <button
+            className="bg-gradient-to-r from-blue-400 to-blue-600 text-white px-6 py-3 rounded-full shadow-lg 
                           transform transition duration-300 ease-in-out hover:scale-105 hover:bg-gradient-to-r 
                           hover:from-blue-500 hover:to-blue-700 hover:shadow-xl"
-        >
-          Request Remote Support
-        </button>
+          >
+            Request Remote Support
+          </button>
+        )}
       </div>
       <div className="flex items-center space-x-8 mr-6 relative">
         <FaUser className="text-2xl cursor-pointer transition-transform duration-200 transform hover:scale-125 hover:text-blue-500" />
@@ -62,7 +70,7 @@ const Header = ({
                   </button>
                   <button
                     className="w-full bg-green-500 text-white py-1 rounded-md"
-                    onClick={purchasePlan}
+                    onClick={handlePurchase}
                   >
                     Purchase
                   </button>
