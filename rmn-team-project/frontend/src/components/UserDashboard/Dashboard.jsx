@@ -13,6 +13,8 @@ const Dashboard = ({ redirectToPlans }) => {
   const [showCorrespondence, setShowCorrespondence] = useState(false);
   const [showReply, setShowReply] = useState(false);
   const [isSignOutModalOpen, setIsSignOutModalOpen] = useState(false);
+  const [cartItems, setCartItems] = useState(0);
+  const [selectedPlan, setSelectedPlan] = useState(null);
   const navigate = useNavigate();
 
   const toggleChat = () => {
@@ -40,6 +42,16 @@ const Dashboard = ({ redirectToPlans }) => {
     setIsSignOutModalOpen(false);
   };
 
+  const removePlan = () => {
+    setSelectedPlan(null);
+    setCartItems(0);
+  };
+
+  const purchasePlan = () => {
+    setSelectedPlan(null);
+    setCartItems(0);
+  };
+
   useEffect(() => {
     if (redirectToPlans) {
       navigate("/dashboard/plans");
@@ -50,7 +62,13 @@ const Dashboard = ({ redirectToPlans }) => {
     <div className="flex min-h-screen bg-gray-10">
       <Sidebar />
       <div className="flex-1 flex flex-col">
-        <Header handleSignOut={handleSignOutClick} />
+        <Header
+          handleSignOut={handleSignOutClick}
+          cartItems={cartItems}
+          selectedPlan={selectedPlan}
+          removePlan={removePlan}
+          purchasePlan={purchasePlan}
+        />
         <Routes>
           <Route
             path="/"
@@ -63,7 +81,16 @@ const Dashboard = ({ redirectToPlans }) => {
               />
             }
           />
-          <Route path="plans" element={<Plans />} />
+          <Route
+            path="plans"
+            element={
+              <Plans
+                setCartItems={setCartItems}
+                setSelectedPlan={setSelectedPlan}
+                selectedPlan={selectedPlan}
+              />
+            }
+          />
         </Routes>
         <Chat isChatOpen={isChatOpen} toggleChat={toggleChat} />
         <Footer />

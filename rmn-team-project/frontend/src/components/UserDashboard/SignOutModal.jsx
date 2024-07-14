@@ -1,17 +1,17 @@
-import React, { useEffect } from 'react';
-import Modal from 'react-modal';
-import { FaTimes } from 'react-icons/fa';
+import React, { useEffect } from "react";
+import Modal from "react-modal";
+import { FaTimes } from "react-icons/fa";
 
 const SignOutModal = ({ isOpen, onRequestClose, onConfirm }) => {
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = "auto";
     }
 
     return () => {
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = "auto";
     };
   }, [isOpen]);
 
@@ -25,7 +25,10 @@ const SignOutModal = ({ isOpen, onRequestClose, onConfirm }) => {
     >
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold">Sign Out</h2>
-        <button onClick={onRequestClose} className="text-gray-500 hover:text-gray-700">
+        <button
+          onClick={onRequestClose}
+          className="text-gray-500 hover:text-gray-700"
+        >
           <FaTimes />
         </button>
       </div>
