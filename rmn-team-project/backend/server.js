@@ -211,11 +211,16 @@ app.get("/api/user", (req, res) => {
     res.json({
       firstName: user.First_Name,
       lastName: user.Second_Name,
+      userId: user.User_ID,
     });
   } else {
     res.status(401).json({ message: "Unauthorized" });
   }
 });
+
+const stripeRoutes = require("./stripe");
+
+app.use("/api", stripeRoutes);
 
 app.use(express.static(path.join(__dirname, "../frontend/build")));
 
@@ -237,34 +242,38 @@ io.on("connection", (socket) => {
 //Database Connections - Tickets
 
 //Submit Ticket
-app.post('/submit-ticket', (req, res) => {
+app.post("/submit-ticket", (req, res) => {
   const { title, description, category, priority, user, admin } = req.body;
 
-  const submitTicketQuery = 'CALL insertTicket(?, ?, ?, ?, ?)';
-  db.query(submitTicketQuery, [title, description, category, priority, user], (err, result) => {
-    if (err) {
-      console.error('Error executing query:', err);
-      res.status(500).send('Server Error');
-      return;
+  const submitTicketQuery = "CALL insertTicket(?, ?, ?, ?, ?)";
+  db.query(
+    submitTicketQuery,
+    [title, description, category, priority, user],
+    (err, result) => {
+      if (err) {
+        console.error("Error executing query:", err);
+        res.status(500).send("Server Error");
+        return;
+      }
+      res.send("Ticket submitted successfully");
     }
-    res.send('Ticket submitted successfully');
-  });
+  );
 });
 
 //Get Ticket via ID
-app.get('/ticket/:id', (req, res) => {
+app.get("/ticket/:id", (req, res) => {
   const ticketId = req.params.id;
 
-  const getTicketQuery = 'CALL getTicket(?)';
+  const getTicketQuery = "CALL getTicket(?)";
   db.query(getTicketQuery, [ticketId], (err, results) => {
     if (err) {
-      console.error('Error executing query:', err);
-      res.status(500).send('Server Error');
+      console.error("Error executing query:", err);
+      res.status(500).send("Server Error");
       return;
     }
 
     if (results.length === 0) {
-      res.status(404).send('Ticket not found');
+      res.status(404).send("Ticket not found");
       return;
     }
 
@@ -273,19 +282,19 @@ app.get('/ticket/:id', (req, res) => {
 });
 
 //Get Ticket via Admin ID - To display on Admin Dashboard
-app.get('/ticket/:adminid', (req, res) => {
+app.get("/ticket/:adminid", (req, res) => {
   const adminID = req.params.adminid;
 
-  const getAdminTicketQuery = 'CALL adminTickets(?)';
+  const getAdminTicketQuery = "CALL adminTickets(?)";
   db.query(getAdminTicketQuery, [adminID], (err, results) => {
     if (err) {
-      console.error('Error executing query:', err);
-      res.status(500).send('Server Error');
+      console.error("Error executing query:", err);
+      res.status(500).send("Server Error");
       return;
     }
 
     if (results.length === 0) {
-      res.status(404).send('No Tickets Available');
+      res.status(404).send("No Tickets Available");
       return;
     }
 
@@ -294,19 +303,19 @@ app.get('/ticket/:adminid', (req, res) => {
 });
 
 //Get Ticket via User ID - To display on User Dashboard
-app.get('/ticket/:userid', (req, res) => {
+app.get("/ticket/:userid", (req, res) => {
   const userID = req.params.userid;
 
-  const getUserTicketQuery = 'CALL userTickets(?)';
+  const getUserTicketQuery = "CALL userTickets(?)";
   db.query(getUserTicketQuery, [userID], (err, results) => {
     if (err) {
-      console.error('Error executing query:', err);
-      res.status(500).send('Server Error');
+      console.error("Error executing query:", err);
+      res.status(500).send("Server Error");
       return;
     }
 
     if (results.length === 0) {
-      res.status(404).send('No Tickets Available');
+      res.status(404).send("No Tickets Available");
       return;
     }
 
