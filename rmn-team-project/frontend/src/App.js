@@ -9,6 +9,8 @@ import Dashboard from "./components/UserDashboard/Dashboard.jsx";
 import LoginModal from "./components/HomePage/LoginModal";
 import RegisterModal from "./components/HomePage/RegisterModal";
 import AdminDashboard from "./components/AdminDashboard/AdminDashboard.jsx";
+import PrivacyPolicy from "./components/HomePage/PrivacyPolicy";
+import TermsOfService from "./components/HomePage/TermsOfService";
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
@@ -36,6 +38,8 @@ function App() {
           />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/contact" element={<ContactUs />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-of-service" element={<TermsOfService />} />
           <Route
             path="/dashboard/*"
             element={<Dashboard redirectToPlans={redirectToPlans} />}
