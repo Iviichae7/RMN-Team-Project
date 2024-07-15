@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import FeaturesSection from "./FeaturesSection";
 import PricingPlansSection from "./PricingPlansSection";
 import FAQSection from "./FAQSection";
@@ -12,6 +12,7 @@ const HomePage = () => {
   const [loginModalIsOpen, setLoginModalIsOpen] = useState(false);
   const [registerModalIsOpen, setRegisterModalIsOpen] = useState(false);
   const [redirectToPlans, setRedirectToPlans] = useState(false);
+  const faqRef = useRef(null);
 
   const openLoginModal = (isPlanRedirect = false) => {
     setLoginModalIsOpen(true);
@@ -35,6 +36,10 @@ const HomePage = () => {
     window.location.href = `http://localhost:3001/auth/microsoft?redirectToPlans=${redirectToPlans}`;
   };
 
+  const scrollToFAQ = () => {
+    faqRef.current.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
     <div
       className={`transition-filter duration-300 ${
@@ -56,10 +61,16 @@ const HomePage = () => {
               Your Trusted Partner for Reliable IT Solutions
             </p>
             <div className="flex justify-center lg:justify-start mb-6">
-              <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-4">
+              <button
+                onClick={openRegisterModal}
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-4"
+              >
                 Get Started
               </button>
-              <button className="bg-transparent hover:bg-gray-200 text-black font-bold py-2 px-4 rounded border border-gray-500">
+              <button
+                onClick={scrollToFAQ}
+                className="bg-transparent hover:bg-gray-200 text-black font-bold py-2 px-4 rounded border border-gray-500"
+              >
                 Learn More
               </button>
             </div>
@@ -75,7 +86,9 @@ const HomePage = () => {
       </main>
       <FeaturesSection />
       <PricingPlansSection openLoginModal={openLoginModal} />
-      <FAQSection />
+      <div ref={faqRef}>
+        <FAQSection />
+      </div>
       <ConsultationSection />
       <Footer />
       <LoginModal
