@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FaCommentDots, FaTimes, FaPaperPlane } from "react-icons/fa";
 import io from "socket.io-client";
-import axios from "axios";
+import axios from "../../config/axiosConfig";
 
 const socket = io("http://localhost:3001");
 

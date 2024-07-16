@@ -18,6 +18,7 @@
     "express-session": "^1.18.0",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.10.1",
+    "nodemon": "^3.1.4",
     "passport": "^0.7.0",
     "passport-azure-ad": "^4.3.5",
     "passport-azure-ad-oauth2": "^0.0.4",
