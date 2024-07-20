@@ -218,6 +218,101 @@ app.get("/api/user", (req, res) => {
   }
 });
 
+app.get("/api/tickets/:userId", async (req, res) => {
+  const userId = req.params.userId;
+
+  try {
+    const getTicketsQuery = `
+          SELECT Tickets.*, Users.First_Name, Users.Second_Name 
+          FROM Tickets 
+          JOIN Users ON Tickets.User_ID = Users.User_ID 
+          WHERE Tickets.User_ID = ?`;
+
+    const [tickets] = await db.query(getTicketsQuery, [userId]);
+    res.status(200).json(tickets);
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Fetch ticket correspondence
+app.get("/api/ticket-correspondence/:ticketId", async (req, res) => {
+  const ticketId = req.params.ticketId;
+
+  try {
+    const getCorrespondenceQuery = `
+      SELECT Messages.*, Users.First_Name, Users.Second_Name 
+      FROM Messages
+      JOIN Tickets ON Messages.Ticket_ID = Tickets.Ticket_ID
+      JOIN Users ON Tickets.User_ID = Users.User_ID
+      WHERE Messages.Ticket_ID = ? 
+      ORDER BY Messages.Created_At ASC`;
+    const [correspondence] = await db.query(getCorrespondenceQuery, [ticketId]);
+    res.status(200).json(correspondence);
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Add a new correspondence message to a ticket
+app.post("/api/ticket-correspondence", async (req, res) => {
+  const { ticketId, message, sender } = req.body;
+
+  if (!ticketId || !message || !sender) {
+    return res
+      .status(400)
+      .json({ message: "Ticket ID, message, and sender are required" });
+  }
+
+  try {
+    const insertMessageQuery = `
+      INSERT INTO Messages (Ticket_ID, Message, Sender)
+      VALUES (?, ?, ?)`;
+    await db.query(insertMessageQuery, [ticketId, message, sender]);
+
+    const [newMessage] = await db.query(
+      "SELECT * FROM Messages WHERE Ticket_ID = ? ORDER BY Created_At DESC LIMIT 1",
+      [ticketId]
+    );
+
+    res.status(201).json(newMessage[0]);
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Submit Ticket
+app.post("/submit-ticket", async (req, res) => {
+  const { subject, description, category, userId: userIdFromBody } = req.body;
+  const userId = req.user ? req.user.User_ID : userIdFromBody;
+  const status = "open";
+
+  if (!subject || !description || !category) {
+    return res
+      .status(400)
+      .json({ message: "Subject, description, and category are required" });
+  }
+
+  if (!userId) {
+    return res.status(400).json({ message: "User ID is required" });
+  }
+
+  try {
+    const insertTicketQuery =
+      "INSERT INTO Tickets (Subject, Description, Category, Status, User_ID) VALUES (?, ?, ?, ?, ?)";
+    await db.query(insertTicketQuery, [
+      subject,
+      description,
+      category,
+      status,
+      userId,
+    ]);
+    res.status(201).json({ message: "Ticket submitted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 const stripeRoutes = require("./stripe");
 
 app.use("/api", stripeRoutes);
@@ -239,86 +334,23 @@ io.on("connection", (socket) => {
   });
 });
 
-//Database Connections - Tickets
-
-//Submit Ticket
-app.post("/submit-ticket", (req, res) => {
-  const { title, description, category, priority, user, admin } = req.body;
-
-  const submitTicketQuery = "CALL insertTicket(?, ?, ?, ?, ?)";
-  db.query(
-    submitTicketQuery,
-    [title, description, category, priority, user],
-    (err, result) => {
-      if (err) {
-        console.error("Error executing query:", err);
-        res.status(500).send("Server Error");
-        return;
-      }
-      res.send("Ticket submitted successfully");
-    }
-  );
-});
-
-//Get Ticket via ID
-app.get("/ticket/:id", (req, res) => {
-  const ticketId = req.params.id;
-
-  const getTicketQuery = "CALL getTicket(?)";
-  db.query(getTicketQuery, [ticketId], (err, results) => {
-    if (err) {
-      console.error("Error executing query:", err);
-      res.status(500).send("Server Error");
-      return;
-    }
-
-    if (results.length === 0) {
-      res.status(404).send("Ticket not found");
-      return;
-    }
-
-    res.json(results[0]);
-  });
-});
-
 //Get Ticket via Admin ID - To display on Admin Dashboard
-app.get("/ticket/:adminid", (req, res) => {
-  const adminID = req.params.adminid;
+// app.get("/ticket/:adminid", (req, res) => {
+//   const adminID = req.params.adminid;
 
-  const getAdminTicketQuery = "CALL adminTickets(?)";
-  db.query(getAdminTicketQuery, [adminID], (err, results) => {
-    if (err) {
-      console.error("Error executing query:", err);
-      res.status(500).send("Server Error");
-      return;
-    }
+//   const getAdminTicketQuery = "CALL adminTickets(?)";
+//   db.query(getAdminTicketQuery, [adminID], (err, results) => {
+//     if (err) {
+//       console.error("Error executing query:", err);
+//       res.status(500).send("Server Error");
+//       return;
+//     }
 
-    if (results.length === 0) {
-      res.status(404).send("No Tickets Available");
-      return;
-    }
+//     if (results.length === 0) {
+//       res.status(404).send("No Tickets Available");
+//       return;
+//     }
 
-    res.json(results[0]);
-  });
-});
-
-//Get Ticket via User ID - To display on User Dashboard
-app.get("/ticket/:userid", (req, res) => {
-  const userID = req.params.userid;
-
-  const getUserTicketQuery = "CALL userTickets(?)";
-  db.query(getUserTicketQuery, [userID], (err, results) => {
-    if (err) {
-      console.error("Error executing query:", err);
-      res.status(500).send("Server Error");
-      return;
-    }
-
-    if (results.length === 0) {
-      res.status(404).send("No Tickets Available");
-      return;
-    }
-
-    res.json(results[0]);
-  });
-});
+//     res.json(results[0]);
+//   });
+// });
