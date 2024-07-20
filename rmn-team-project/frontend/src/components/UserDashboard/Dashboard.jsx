@@ -9,15 +9,16 @@ import Footer from "./Footer";
 import Plans from "./Plans";
 import Payment from "./Payment";
 import SignOutModal from "./SignOutModal";
+import CreateTicket from "./CreateTicket";
 
 const Dashboard = ({ redirectToPlans }) => {
   const [isChatOpen, setIsChatOpen] = useState(false);
-  const [showCorrespondence, setShowCorrespondence] = useState(false);
+  const [showCorrespondence, setShowCorrespondence] = useState(null);
   const [showReply, setShowReply] = useState(false);
   const [isSignOutModalOpen, setIsSignOutModalOpen] = useState(false);
   const [cartItems, setCartItems] = useState(0);
   const [selectedPlan, setSelectedPlan] = useState(null);
-  const [userId, setUserId] = useState(null);
+  const [userId, setUserId] = useState(localStorage.getItem("userId") || null);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -25,8 +26,8 @@ const Dashboard = ({ redirectToPlans }) => {
     setIsChatOpen(!isChatOpen);
   };
 
-  const handleViewClick = () => {
-    setShowCorrespondence(!showCorrespondence);
+  const handleViewClick = (ticket) => {
+    setShowCorrespondence(ticket);
   };
 
   const handleReplyClick = () => {
@@ -39,6 +40,7 @@ const Dashboard = ({ redirectToPlans }) => {
 
   const handleSignOutConfirm = () => {
     setIsSignOutModalOpen(false);
+    localStorage.removeItem("userId");
     navigate("/");
   };
 
@@ -76,6 +78,7 @@ const Dashboard = ({ redirectToPlans }) => {
         const response = await axios.get("/api/user");
         if (response.data && response.data.userId) {
           setUserId(response.data.userId);
+          localStorage.setItem("userId", response.data.userId);
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -107,10 +110,13 @@ const Dashboard = ({ redirectToPlans }) => {
             path="/"
             element={
               <MainContent
+                userId={userId}
                 handleViewClick={handleViewClick}
                 handleReplyClick={handleReplyClick}
                 showCorrespondence={showCorrespondence}
+                setShowCorrespondence={setShowCorrespondence}
                 showReply={showReply}
+                setShowReply={setShowReply}
               />
             }
           />
@@ -125,6 +131,7 @@ const Dashboard = ({ redirectToPlans }) => {
             }
           />
           <Route path="payment" element={<Payment clearCart={clearCart} />} />
+          <Route path="create-ticket" element={<CreateTicket />} />
         </Routes>
         <Chat isChatOpen={isChatOpen} toggleChat={toggleChat} />
         <Footer />
