@@ -264,11 +264,17 @@ app.post("/api/ticket-correspondence", async (req, res) => {
       .json({ message: "Ticket ID, message, and sender are required" });
   }
 
+  const isAdmin = sender === "IT Support";
+
   try {
     const insertMessageQuery = `
       INSERT INTO Messages (Ticket_ID, Message, Sender)
       VALUES (?, ?, ?)`;
-    await db.query(insertMessageQuery, [ticketId, message, sender]);
+    await db.query(insertMessageQuery, [
+      ticketId,
+      message,
+      isAdmin ? "IT Support" : sender,
+    ]);
 
     const [newMessage] = await db.query(
       "SELECT * FROM Messages WHERE Ticket_ID = ? ORDER BY Created_At DESC LIMIT 1",
@@ -313,6 +319,20 @@ app.post("/submit-ticket", async (req, res) => {
   }
 });
 
+// Fetch all tickets for Admins
+app.get("/api/tickets", async (req, res) => {
+  try {
+    const getTicketsQuery = `
+          SELECT Tickets.*, Users.First_Name, Users.Second_Name 
+          FROM Tickets 
+          JOIN Users ON Tickets.User_ID = Users.User_ID`;
+    const [tickets] = await db.query(getTicketsQuery);
+    res.status(200).json(tickets);
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 const stripeRoutes = require("./stripe");
 
 app.use("/api", stripeRoutes);
@@ -333,24 +353,3 @@ io.on("connection", (socket) => {
     io.emit("chat message", msg);
   });
 });
-
-//Get Ticket via Admin ID - To display on Admin Dashboard
-// app.get("/ticket/:adminid", (req, res) => {
-//   const adminID = req.params.adminid;
-
-//   const getAdminTicketQuery = "CALL adminTickets(?)";
-//   db.query(getAdminTicketQuery, [adminID], (err, results) => {
-//     if (err) {
-//       console.error("Error executing query:", err);
-//       res.status(500).send("Server Error");
-//       return;
-//     }
-
-//     if (results.length === 0) {
-//       res.status(404).send("No Tickets Available");
-//       return;
-//     }
-
-//     res.json(results[0]);
-//   });
-// });
