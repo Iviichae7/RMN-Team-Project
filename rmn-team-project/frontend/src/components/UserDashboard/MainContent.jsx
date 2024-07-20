@@ -204,14 +204,19 @@ const MainContent = ({
                       style={{ backgroundColor: colors[message.Ticket_ID] }}
                     >
                       {getUserInitials(
-                        showCorrespondence.First_Name,
-                        showCorrespondence.Second_Name
+                        message.Sender === "IT Support"
+                          ? "IT"
+                          : showCorrespondence.First_Name,
+                        message.Sender === "IT Support"
+                          ? ""
+                          : showCorrespondence.Second_Name
                       )}
                     </div>
                     <div className="bg-gray-200 p-2 rounded-md flex-1">
                       <p className="font-bold text-blue-600">
-                        {showCorrespondence.First_Name}{" "}
-                        {showCorrespondence.Second_Name}
+                        {message.Sender === "IT Support"
+                          ? "IT Support"
+                          : `${showCorrespondence.First_Name} ${showCorrespondence.Second_Name}`}
                       </p>
                       <p className="text-sm text-gray-500 mb-4">
                         {new Date(message.Created_At).toLocaleString()}
@@ -223,14 +228,17 @@ const MainContent = ({
               <div className="mt-4 flex justify-center space-x-4">
                 {correspondence.length > 1 && (
                   <button
-                    className="bg-gray-200 text-gray-600 px-4 py-2 rounded-md"
+                    className="relative bg-gray-200 text-gray-600 px-4 py-2 rounded-md"
                     onClick={() => setShowFullThread(!showFullThread)}
                   >
-                    ... {correspondence.length}
+                    <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full h-6 w-6 flex items-center justify-center -mt-3 -mr-3">
+                      {correspondence.length}
+                    </span>
+                    ...
                   </button>
                 )}
                 {Array.isArray(correspondence) &&
-                correspondence.some((msg) => msg.Sender === "admin") ? (
+                correspondence.some((msg) => msg.Sender === "IT Support") ? (
                   <button
                     onClick={() => setShowReply(!showReply)}
                     className="bg-gray-200 text-gray-600 px-4 py-2 rounded-md flex items-center justify-center space-x-2"
