@@ -223,11 +223,15 @@ app.get("/api/tickets/:userId", async (req, res) => {
 
   try {
     const getTicketsQuery = `
-          SELECT Tickets.*, Users.First_Name, Users.Second_Name 
-          FROM Tickets 
-          JOIN Users ON Tickets.User_ID = Users.User_ID 
-          WHERE Tickets.User_ID = ?`;
-
+      SELECT Tickets.*, 
+             Users.First_Name, 
+             Users.Second_Name, 
+             Agents.First_Name AS Agent_First_Name, 
+             Agents.Second_Name AS Agent_Second_Name 
+      FROM Tickets
+      JOIN Users ON Tickets.User_ID = Users.User_ID 
+      LEFT JOIN Users AS Agents ON Tickets.Agent = Agents.User_ID
+      WHERE Tickets.User_ID = ?`;
     const [tickets] = await db.query(getTicketsQuery, [userId]);
     res.status(200).json(tickets);
   } catch (error) {
@@ -323,11 +327,42 @@ app.post("/submit-ticket", async (req, res) => {
 app.get("/api/tickets", async (req, res) => {
   try {
     const getTicketsQuery = `
-          SELECT Tickets.*, Users.First_Name, Users.Second_Name 
-          FROM Tickets 
-          JOIN Users ON Tickets.User_ID = Users.User_ID`;
+      SELECT Tickets.*, 
+             Users.First_Name, 
+             Users.Second_Name, 
+             Agents.First_Name AS Agent_First_Name, 
+             Agents.Second_Name AS Agent_Second_Name 
+      FROM Tickets
+      LEFT JOIN Users ON Tickets.User_ID = Users.User_ID
+      LEFT JOIN Users AS Agents ON Tickets.Agent = Agents.User_ID
+      ORDER BY Tickets.Ticket_ID DESC`;
     const [tickets] = await db.query(getTicketsQuery);
     res.status(200).json(tickets);
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Update ticket status, priority, and agent
+app.put("/api/tickets/:ticketId", async (req, res) => {
+  const ticketId = req.params.ticketId;
+  const updates = req.body;
+
+  try {
+    const updateTicketQuery = `UPDATE Tickets SET ? WHERE Ticket_ID = ?`;
+    await db.query(updateTicketQuery, [updates, ticketId]);
+    res.status(200).json({ message: "Ticket updated successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Fetch admin users
+app.get("/api/admins", async (req, res) => {
+  try {
+    const getAdminsQuery = `SELECT User_ID, First_Name, Second_Name FROM Users WHERE Role = 'admin'`;
+    const [admins] = await db.query(getAdminsQuery);
+    res.status(200).json(admins);
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
