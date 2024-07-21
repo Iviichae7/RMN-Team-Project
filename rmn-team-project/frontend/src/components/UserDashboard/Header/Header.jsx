@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { FaUser, FaShoppingCart, FaSignOutAlt } from "react-icons/fa";
+import RemoteSupportModal from "../Modals/RemoteSupportModal";
 
 const Header = ({
   handleSignOut,
@@ -8,8 +9,11 @@ const Header = ({
   removePlan,
   purchasePlan,
   currentRoute,
+  userId,
 }) => {
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isRemoteSupportModalOpen, setIsRemoteSupportModalOpen] =
+    useState(false);
 
   const toggleCart = () => {
     setIsCartOpen(!isCartOpen);
@@ -18,6 +22,10 @@ const Header = ({
   const handlePurchase = () => {
     purchasePlan();
     setIsCartOpen(false);
+  };
+
+  const toggleRemoteSupportModal = () => {
+    setIsRemoteSupportModalOpen(!isRemoteSupportModalOpen);
   };
 
   return (
@@ -35,6 +43,7 @@ const Header = ({
             className="bg-gradient-to-r from-blue-400 to-blue-600 text-white px-6 py-3 rounded-full shadow-lg 
                           transform transition duration-300 ease-in-out hover:scale-105 hover:bg-gradient-to-r 
                           hover:from-blue-500 hover:to-blue-700 hover:shadow-xl"
+            onClick={toggleRemoteSupportModal}
           >
             Request Remote Support
           </button>
@@ -86,6 +95,12 @@ const Header = ({
           onClick={handleSignOut}
         />
       </div>
+      {isRemoteSupportModalOpen && (
+        <RemoteSupportModal
+          onClose={toggleRemoteSupportModal}
+          userId={userId}
+        />
+      )}
     </header>
   );
 };

@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 const TicketSubmissionForm = ({ onSubmit }) => {
   const [TicketInfo, setTicketInfo] = useState({
-    title: '',
-    description: '',
-    category: '',
-    priority: '',
-    user: '', //Connect to real user ID
+    title: "",
+    description: "",
+    category: "",
+    priority: "",
+    user: "",
   });
 
   const handleChange = (e) => {
@@ -20,10 +20,10 @@ const TicketSubmissionForm = ({ onSubmit }) => {
   const ticketSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:3001/submit-ticket', {
-        method: 'POST',
+      const response = await fetch("http://localhost:3001/submit-ticket", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(TicketInfo),
       });
@@ -31,10 +31,10 @@ const TicketSubmissionForm = ({ onSubmit }) => {
         const result = await response.json();
         console.log(result.message);
       } else {
-        console.error('Error submitting ticket');
+        console.error("Error submitting ticket");
       }
     } catch (error) {
-      console.error('Error submitting ticket:', error);
+      console.error("Error submitting ticket:", error);
     }
   };
 
@@ -86,7 +86,10 @@ const TicketSubmissionForm = ({ onSubmit }) => {
               <option value="low">Low</option>
             </select>
           </div>
-          <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md">
+          <button
+            type="submit"
+            className="bg-blue-500 text-white px-4 py-2 rounded-md"
+          >
             Submit
           </button>
         </form>

@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Routes, Route, useLocation } from "react-router-dom";
 import axios from "../../config/axiosConfig";
-import Sidebar from "./Sidebar";
-import Header from "./Header";
-import MainContent from "./MainContent";
-import Chat from "./Chat";
-import Footer from "./Footer";
-import Plans from "./Plans";
-import Payment from "./Payment";
-import SignOutModal from "./SignOutModal";
-import CreateTicket from "./CreateTicket";
+import Sidebar from "./Sidebar/Sidebar";
+import Header from "./Header/Header";
+import MainContent from "./MainContent/MainContent";
+import Chat from "./Chat/Chat";
+import Footer from "./Footer/Footer";
+import Plans from "./Plans/Plans";
+import Payment from "./Payment/Payment";
+import SignOutModal from "./Modals/SignOutModal";
+import CreateTicket from "./Tickets/CreateTicket";
 
 const Dashboard = ({ redirectToPlans }) => {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -104,6 +104,7 @@ const Dashboard = ({ redirectToPlans }) => {
           purchasePlan={purchasePlan}
           clearCart={clearCart}
           currentRoute={location.pathname}
+          userId={userId}
         />
         <Routes>
           <Route

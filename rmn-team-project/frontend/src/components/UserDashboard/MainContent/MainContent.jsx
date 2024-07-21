@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FaEye, FaReply, FaTimes } from "react-icons/fa";
-import axios from "../../config/axiosConfig";
+import axios from "../../../config/axiosConfig";
 
 const MainContent = ({
   userId,

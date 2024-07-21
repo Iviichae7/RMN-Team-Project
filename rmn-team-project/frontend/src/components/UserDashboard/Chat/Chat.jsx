@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FaCommentDots, FaTimes, FaPaperPlane } from "react-icons/fa";
 import io from "socket.io-client";
-import axios from "../../config/axiosConfig";
+import axios from "../../../config/axiosConfig";
 
 const socket = io("http://localhost:3001");
 
@@ -71,7 +71,7 @@ const Chat = ({ isChatOpen, toggleChat }) => {
       >
         <div className="bg-white shadow-lg rounded-lg w-80 h-96 flex flex-col">
           <div className="flex justify-between items-center bg-blue-500 text-white p-4 rounded-t-lg">
-            <h2 className="text-lg font-bold">Chat Bot / Live Chat</h2>
+            <h2 className="text-lg font-bold">Live Chat</h2>
             <button
               onClick={toggleChat}
               className="text-white hover:text-gray-300"
