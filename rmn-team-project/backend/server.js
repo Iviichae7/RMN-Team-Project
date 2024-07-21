@@ -368,6 +368,65 @@ app.get("/api/admins", async (req, res) => {
   }
 });
 
+// Create a new remote support ticket
+app.post("/api/remote-support-tickets", async (req, res) => {
+  const { userId, anydeskID, description } = req.body;
+
+  if (!userId || !anydeskID || !description) {
+    return res
+      .status(400)
+      .json({ message: "User ID, AnyDesk ID, and description are required" });
+  }
+
+  try {
+    const insertTicketQuery =
+      "INSERT INTO RemoteSupportTickets (User_ID, AnyDesk_ID, Description, Status) VALUES (?, ?, ?, 'Pending')";
+    await db.query(insertTicketQuery, [userId, anydeskID, description]);
+
+    res
+      .status(201)
+      .json({ message: "Remote support ticket created successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Fetch all remote support tickets for Admin
+app.get("/api/remote-support-tickets", async (req, res) => {
+  try {
+    const getTicketsQuery = `
+      SELECT RemoteSupportTickets.*, Users.First_Name, Users.Second_Name
+      FROM RemoteSupportTickets
+      JOIN Users ON RemoteSupportTickets.user_id = Users.User_ID
+      ORDER BY RemoteSupportTickets.id ASC`;
+    const [tickets] = await db.query(getTicketsQuery);
+    res.status(200).json(tickets);
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Update remote support ticket
+app.put("/api/remote-support-tickets/:ticketId", async (req, res) => {
+  const ticketId = req.params.ticketId;
+  const { status } = req.body;
+
+  if (!status) {
+    return res.status(400).json({ message: "Status is required" });
+  }
+
+  try {
+    const updateTicketQuery = `
+      UPDATE RemoteSupportTickets
+      SET status = ?
+      WHERE id = ?`;
+    await db.query(updateTicketQuery, [status, ticketId]);
+    res.status(200).json({ message: "Ticket updated successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 const stripeRoutes = require("./stripe");
 
 app.use("/api", stripeRoutes);
