@@ -98,6 +98,11 @@ const MainContent = ({
     }
   };
 
+  const resolvedStyle = {
+    opacity: 0.5,
+    backgroundColor: "#f8f9fa",
+  };
+
   return (
     <main className="flex-1 p-6">
       <div className="bg-gray-100 shadow-xl rounded-lg p-4">
@@ -113,45 +118,50 @@ const MainContent = ({
           </div>
           <div className="space-y-4">
             {tickets.length > 0 ? (
-              tickets.map((ticket) => (
-                <div
-                  key={ticket.Ticket_ID}
-                  className="bg-gray-100 rounded-lg p-4 shadow-md grid grid-cols-6 gap-4 border border-black border-opacity-15 mt-4"
-                >
-                  <div className="flex items-center justify-center">
-                    <div
-                      className="w-8 h-8 text-white rounded-md flex items-center justify-center"
-                      style={{ backgroundColor: colors[ticket.Ticket_ID] }}
-                    >
-                      {getUserInitials(ticket.First_Name, ticket.Second_Name)}
+              tickets
+                .sort((a, b) => (a.Status === "Resolved" ? 1 : -1))
+                .map((ticket) => (
+                  <div
+                    key={ticket.Ticket_ID}
+                    className="bg-gray-100 rounded-lg p-4 shadow-md grid grid-cols-6 gap-4 border border-black border-opacity-15 mt-4"
+                    style={ticket.Status === "Resolved" ? resolvedStyle : {}}
+                  >
+                    <div className="flex items-center justify-center">
+                      <div
+                        className="w-8 h-8 text-white rounded-md flex items-center justify-center"
+                        style={{ backgroundColor: colors[ticket.Ticket_ID] }}
+                      >
+                        {getUserInitials(ticket.First_Name, ticket.Second_Name)}
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-center text-center">
+                      {ticket.Subject}
+                    </div>
+                    <div className="flex items-center justify-center text-center">
+                      {ticket.Category}
+                    </div>
+                    <div className="flex items-center justify-center text-center">
+                      {ticket.Agent_First_Name && ticket.Agent_Second_Name
+                        ? `${ticket.Agent_First_Name} ${ticket.Agent_Second_Name}`
+                        : "Not Assigned"}
+                    </div>
+                    <div className="flex items-center justify-center text-center">
+                      {ticket.Status}
+                    </div>
+                    <div className="flex items-center justify-center">
+                      <button
+                        onClick={() => toggleCorrespondence(ticket)}
+                        className="text-blue-500 hover:text-blue-700"
+                      >
+                        <FaEye />{" "}
+                        {showCorrespondence &&
+                        showCorrespondence.Ticket_ID === ticket.Ticket_ID
+                          ? "Close"
+                          : "View"}
+                      </button>
                     </div>
                   </div>
-                  <div className="flex items-center justify-center text-center">
-                    {ticket.Subject}
-                  </div>
-                  <div className="flex items-center justify-center text-center">
-                    {ticket.Category}
-                  </div>
-                  <div className="flex items-center justify-center text-center">
-                    {ticket.Agent || "-"}
-                  </div>
-                  <div className="flex items-center justify-center text-center">
-                    {ticket.Status}
-                  </div>
-                  <div className="flex items-center justify-center">
-                    <button
-                      onClick={() => toggleCorrespondence(ticket)}
-                      className="text-blue-500 hover:text-blue-700"
-                    >
-                      <FaEye />{" "}
-                      {showCorrespondence &&
-                      showCorrespondence.Ticket_ID === ticket.Ticket_ID
-                        ? "Close"
-                        : "View"}
-                    </button>
-                  </div>
-                </div>
-              ))
+                ))
             ) : (
               <div className="text-center p-4">No tickets found.</div>
             )}
