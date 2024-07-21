@@ -1,16 +1,60 @@
-import React, { useState } from "react";
-
-const RDPSupportRequests = [
-  {
-    id: 1,
-    user: "user@rmn.com",
-    status: "Pending",
-    requestDate: "2024-07-10",
-  },
-];
+import React, { useState, useEffect } from "react";
+import axios from "../../config/axiosConfig";
+import EditRDPSupport from "./EditRDPSupport";
+import { FaEye, FaClipboard } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const RDPSupport = () => {
-  const [requests, setRequests] = useState(RDPSupportRequests);
+  const [requests, setRequests] = useState([]);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+
+  useEffect(() => {
+    const fetchRequests = async () => {
+      try {
+        const response = await axios.get("/api/remote-support-tickets");
+        setRequests(Array.isArray(response.data) ? response.data : []);
+      } catch (error) {
+        console.error("Error fetching RDP support requests:", error);
+      }
+    };
+
+    fetchRequests();
+  }, []);
+
+  const handleViewRequest = (request) => {
+    setSelectedRequest(request);
+  };
+
+  const handleCloseRequest = () => {
+    setSelectedRequest(null);
+  };
+
+  const handleUpdateRequest = async (requestId, updates) => {
+    try {
+      await axios.put(`/api/remote-support-tickets/${requestId}`, updates);
+      setRequests((prevRequests) =>
+        prevRequests.map((req) =>
+          req.id === requestId ? { ...req, ...updates } : req
+        )
+      );
+    } catch (error) {
+      console.error("Error updating request:", error);
+    }
+  };
+
+  const handleCopyAnyDeskID = (anydeskID) => {
+    navigator.clipboard.writeText(anydeskID);
+    toast.success("AnyDesk ID copied to clipboard.", {
+      position: "bottom-left",
+      autoClose: 1000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+  };
 
   return (
     <div>
@@ -20,10 +64,13 @@ const RDPSupport = () => {
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                ID
+                Ticket#
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 User
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                AnyDesk#ID
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Status
@@ -40,19 +87,31 @@ const RDPSupport = () => {
             {requests.map((request) => (
               <tr key={request.id}>
                 <td className="px-6 py-4 whitespace-nowrap">{request.id}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{request.user}</td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {request.First_Name} {request.Second_Name}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {request.anydesk_id}
+                </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   {request.status}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  {request.requestDate}
+                  {new Date(request.request_date).toLocaleDateString()}{" "}
+                  {new Date(request.request_date).toLocaleTimeString()}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <button className="text-blue-600 hover:text-blue-900">
-                    View
+                  <button
+                    className="text-blue-600 hover:text-blue-900"
+                    onClick={() => handleViewRequest(request)}
+                  >
+                    <FaEye size={20} />
                   </button>
-                  <button className="ml-2 text-red-600 hover:text-red-900">
-                    Delete
+                  <button
+                    className="ml-2 text-green-600 hover:text-green-900"
+                    onClick={() => handleCopyAnyDeskID(request.anydesk_id)}
+                  >
+                    <FaClipboard size={20} />
                   </button>
                 </td>
               </tr>
@@ -60,6 +119,14 @@ const RDPSupport = () => {
           </tbody>
         </table>
       </div>
+      {selectedRequest && (
+        <EditRDPSupport
+          request={selectedRequest}
+          onClose={handleCloseRequest}
+          onUpdateRequest={handleUpdateRequest}
+        />
+      )}
+      <ToastContainer />
     </div>
   );
 };
