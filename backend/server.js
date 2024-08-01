@@ -12,6 +12,9 @@ const bcrypt = require("bcrypt");
 const http = require("http");
 const { Server } = require("socket.io");
 
+const BACKEND_URL =
+  process.env.HEROKU_BACKEND_DOMAIN || "http://localhost:3001";
+
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -64,9 +67,9 @@ app.get(
   (req, res) => {
     const redirectToPlans = req.query.state === "redirectToPlans";
     if (redirectToPlans) {
-      res.redirect("http://localhost:3000/dashboard/plans");
+      res.redirect(`${BACKEND_URL}/dashboard/plans`);
     } else {
-      res.redirect("http://localhost:3000/dashboard");
+      res.redirect(`${BACKEND_URL}/dashboard`);
     }
   }
 );
