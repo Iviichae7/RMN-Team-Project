@@ -45,6 +45,10 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.get("/", (req, res) => {
+  res.send("This works!");
+});
+
 app.get("/auth/google", (req, res, next) => {
   const { redirectToPlans } = req.query;
   const state = redirectToPlans === "true" ? "redirectToPlans" : "noRedirect";
