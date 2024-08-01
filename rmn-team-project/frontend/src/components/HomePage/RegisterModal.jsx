@@ -147,16 +147,15 @@ const RegisterModal = ({ isOpen, onRequestClose, openLoginModal }) => {
           </button>
         </form>
         <div className="mt-4 text-center">
-          <a
-            href="#"
+          <button
             onClick={() => {
               onRequestClose();
               openLoginModal();
             }}
-            className="text-blue-500 hover:underline"
+            className="text-blue-500 hover:underline bg-transparent border-none p-0 cursor-pointer"
           >
             Have an account? Sign in
-          </a>
+          </button>
         </div>
         <ToastContainer />
       </div>

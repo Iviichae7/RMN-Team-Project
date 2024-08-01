@@ -16,7 +16,7 @@ const mockEmails = [
 ];
 
 const Emails = () => {
-  const [emails, setEmails] = useState(mockEmails);
+  const [emails] = useState(mockEmails);
 
   return (
     <div>

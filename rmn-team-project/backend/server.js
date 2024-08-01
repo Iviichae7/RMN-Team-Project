@@ -437,7 +437,7 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/build/index.html"));
 });
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
   console.log(`Server started on http://localhost:${PORT}`);
 });

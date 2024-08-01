@@ -4,7 +4,6 @@ import {
   FaChartLine,
   FaTicketAlt,
   FaEnvelope,
-  FaComments,
   FaUserPlus,
   FaDesktop,
 } from "react-icons/fa";

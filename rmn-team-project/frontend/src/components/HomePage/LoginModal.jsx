@@ -146,13 +146,12 @@ const LoginModal = ({
           </button>
         </form>
         <div className="mt-4 text-center">
-          <a
-            href="#"
+          <button
             onClick={handleOpenRegisterModal}
             className="text-blue-500 hover:underline"
           >
             Don't have an account? Register
-          </a>
+          </button>
         </div>
         <ToastContainer />
       </div>
