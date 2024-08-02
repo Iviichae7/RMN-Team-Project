@@ -2,15 +2,19 @@ import React, { useState } from "react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import LoginModal from "./LoginModal";
+import RegisterModal from "./RegisterModal";
 import { useNavigate } from "react-router-dom";
 
 const AboutUs = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [registerModalIsOpen, setRegisterModalIsOpen] = useState(false);
   const navigate = useNavigate();
 
   const openModal = () => setModalIsOpen(true);
   const closeModal = () => setModalIsOpen(false);
 
+  const openRegisterModal = () => setRegisterModalIsOpen(true);
+  const closeRegisterModal = () => setRegisterModalIsOpen(false);
   const handleGoogleLogin = () => {
     window.location.href = "http://localhost:3001/auth/google";
   };
@@ -21,10 +25,10 @@ const AboutUs = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar openModal={openModal} />
+      <Navbar openModal={openModal} openRegisterModal={openRegisterModal} />
       <main
         className={`flex-grow bg-gray-100 transition-filter duration-300 ${
-          modalIsOpen ? "blur-sm" : ""
+          modalIsOpen || registerModalIsOpen ? "blur-sm" : ""
         }`}
       >
         <div className="max-w-7xl mx-auto p-6">
@@ -68,6 +72,11 @@ const AboutUs = () => {
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
         handleGoogleLogin={handleGoogleLogin}
+      />
+      <RegisterModal
+        isOpen={registerModalIsOpen}
+        onRequestClose={closeRegisterModal}
+        openLoginModal={openModal}
       />
     </div>
   );

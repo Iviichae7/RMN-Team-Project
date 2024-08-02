@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import LoginModal from "./LoginModal";
+import RegisterModal from "./RegisterModal";
 
 const ContactUs = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [registerModalIsOpen, setRegisterModalIsOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -14,6 +16,9 @@ const ContactUs = () => {
 
   const openModal = () => setModalIsOpen(true);
   const closeModal = () => setModalIsOpen(false);
+
+  const openRegisterModal = () => setRegisterModalIsOpen(true);
+  const closeRegisterModal = () => setRegisterModalIsOpen(false);
 
   const handleGoogleLogin = () => {
     window.location.href = "http://localhost:3001/auth/google";
@@ -38,10 +43,10 @@ const ContactUs = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar openModal={openModal} />
+      <Navbar openModal={openModal} openRegisterModal={openRegisterModal} />
       <main
         className={`flex-grow bg-gray-100 p-6 transition-filter duration-300 ${
-          modalIsOpen ? "blur-sm" : ""
+          modalIsOpen || registerModalIsOpen ? "blur-sm" : ""
         }`}
       >
         <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6">
@@ -154,6 +159,11 @@ const ContactUs = () => {
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
         handleGoogleLogin={handleGoogleLogin}
+      />
+      <RegisterModal
+        isOpen={registerModalIsOpen}
+        onRequestClose={closeRegisterModal}
+        openLoginModal={openModal}
       />
     </div>
   );

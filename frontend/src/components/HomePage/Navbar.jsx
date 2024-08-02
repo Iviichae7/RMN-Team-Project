@@ -152,7 +152,7 @@ const Navbar = ({ openModal, openRegisterModal }) => {
                     }}
                     className="block w-full text-left text-sm px-4 py-2 leading-none border rounded text-white bg-blue-500 border-blue-500 hover:border-transparent hover:bg-blue-700 mt-4"
                   >
-                    Sing Up
+                    Sign Up
                   </button>
                 </div>
               </div>
