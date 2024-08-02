@@ -16,16 +16,38 @@ const RegisterModal = ({ isOpen, onRequestClose, openLoginModal }) => {
     password: "",
   });
 
+  const [errors, setErrors] = useState({});
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
     }));
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: "",
+    }));
+  };
+
+  const validate = () => {
+    const newErrors = {};
+    if (!formData.firstName) newErrors.firstName = "First Name is required";
+    if (!formData.lastName) newErrors.lastName = "Last Name is required";
+    if (!formData.email) newErrors.email = "Email is required";
+    if (!formData.phoneNumber)
+      newErrors.phoneNumber = "Phone Number is required";
+    if (!formData.password) newErrors.password = "Password is required";
+    return newErrors;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
     try {
       await axios.post("http://localhost:3001/api/register", formData);
       toast.success("Sign Up Complete!", {
@@ -86,6 +108,9 @@ const RegisterModal = ({ isOpen, onRequestClose, openLoginModal }) => {
               className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
               placeholder="Enter your first name"
             />
+            {errors.firstName && (
+              <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>
+            )}
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -99,6 +124,9 @@ const RegisterModal = ({ isOpen, onRequestClose, openLoginModal }) => {
               className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
               placeholder="Enter your last name"
             />
+            {errors.lastName && (
+              <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>
+            )}
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -112,6 +140,9 @@ const RegisterModal = ({ isOpen, onRequestClose, openLoginModal }) => {
               className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
               placeholder="Enter your email"
             />
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+            )}
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -125,6 +156,9 @@ const RegisterModal = ({ isOpen, onRequestClose, openLoginModal }) => {
               className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
               placeholder="Enter your phone number"
             />
+            {errors.phoneNumber && (
+              <p className="text-red-500 text-sm mt-1">{errors.phoneNumber}</p>
+            )}
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -138,6 +172,9 @@ const RegisterModal = ({ isOpen, onRequestClose, openLoginModal }) => {
               className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
               placeholder="Enter your password"
             />
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+            )}
           </div>
           <button
             type="submit"

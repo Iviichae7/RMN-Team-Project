@@ -107,6 +107,11 @@ app.get("/logout", (req, res) => {
 
 app.post("/api/register", async (req, res) => {
   const { firstName, lastName, email, phoneNumber, password } = req.body;
+
+  if (!firstName || !lastName || !email || !phoneNumber || !password) {
+    return res.status(400);
+  }
+
   try {
     const [existingUser] = await db.query(
       "SELECT * FROM Users WHERE Email = ?",
