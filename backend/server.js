@@ -12,8 +12,10 @@ const bcrypt = require("bcrypt");
 const http = require("http");
 const { Server } = require("socket.io");
 
+// Create an Express application
 const app = express();
 const server = http.createServer(app);
+// Initialize Socket server with CORS options
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:3000",
@@ -28,6 +30,8 @@ app.use(
     credentials: true,
   })
 );
+
+// Parse incoming JSON and url encoded request bodies
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -49,6 +53,10 @@ app.use(passport.session());
 //   res.send("This works!");
 // });
 
+/*
+ * Route to start Google authentication.
+ * Redirects user to googles oauth 2 server for authentication.
+ */
 app.get("/auth/google", (req, res, next) => {
   const { redirectToPlans } = req.query;
   const state = redirectToPlans === "true" ? "redirectToPlans" : "noRedirect";
@@ -58,6 +66,10 @@ app.get("/auth/google", (req, res, next) => {
   })(req, res, next);
 });
 
+/*
+ * Callback route for Google authentication.
+ * Handles response from Google and redirects user.
+ */
 app.get(
   "/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/login", session: true }),
@@ -71,6 +83,10 @@ app.get(
   }
 );
 
+/*
+ * Route to start Microsoft authentication.
+ * Redirects user to Microsofts oauth 2 server for authentication.
+ */
 app.get("/auth/microsoft", (req, res, next) => {
   const { redirectToPlans } = req.query;
   const state = redirectToPlans === "true" ? "redirectToPlans" : "noRedirect";
@@ -80,6 +96,10 @@ app.get("/auth/microsoft", (req, res, next) => {
   })(req, res, next);
 });
 
+/*
+ * Callback route for Microsoft authentication.
+ * Handles response from Microsoft and redirects user accordingly.
+ */
 app.get(
   "/auth/microsoft/callback",
   passport.authenticate("azure_ad_oauth2", {
@@ -96,6 +116,10 @@ app.get(
   }
 );
 
+/*
+ * Route to log out the user.
+ * Ends the user's session and redirects to the homepage.
+ */
 app.get("/logout", (req, res) => {
   req.logout((err) => {
     if (err) {
@@ -105,9 +129,14 @@ app.get("/logout", (req, res) => {
   });
 });
 
+/*
+ * Route to register a new user.
+ * Creates a new user or updates an existing one with provided details.
+ */
 app.post("/api/register", async (req, res) => {
   const { firstName, lastName, email, phoneNumber, password } = req.body;
 
+  // Check if required fields are provided
   if (!firstName || !lastName || !email || !phoneNumber || !password) {
     return res.status(400);
   }
@@ -118,7 +147,9 @@ app.post("/api/register", async (req, res) => {
       [email]
     );
 
+    // Check if the user already exists in the database
     if (existingUser.length > 0) {
+      // If the user exists but does not have a password, update the user with the password
       if (!existingUser[0].password) {
         const hashedPassword = await bcrypt.hash(password, 10);
         const updateQuery =
@@ -159,10 +190,17 @@ app.post("/api/register", async (req, res) => {
   }
 });
 
+/*
+ * Route to add or update a user.
+ * Inserts a new user or updates an existing user based on provided details.
+ */
 app.post("/api/addUser", async (req, res) => {
+  // Get user details from the request body
   const { firstName, lastName, email, phone, password, role } = req.body;
   try {
+    // Check if the user already exists in the database
     const hashedPassword = await bcrypt.hash(password, 10);
+    // Query to insert or update the user based on the email
     const insertQuery = `
       INSERT INTO Users (First_Name, Second_Name, Email, Phone, password, role)
       VALUES (?, ?, ?, ?, ?, ?)
@@ -184,6 +222,10 @@ app.post("/api/addUser", async (req, res) => {
   }
 });
 
+/*
+ * Route to fetch the role of the currently authenticated user.
+ * Returns the user's role if authenticated, otherwise returns unauthorized status.
+ */
 app.get("/api/userRole", (req, res) => {
   if (req.isAuthenticated()) {
     res.json({ role: req.user.role });
@@ -192,11 +234,17 @@ app.get("/api/userRole", (req, res) => {
   }
 });
 
+/*
+ * Route to log in a user with local strategy.
+ * Authenticates the user and returns user details and admin status upon success.
+ */
 app.post("/login", (req, res, next) => {
   passport.authenticate("local", (err, user, info) => {
+    // If an error occurred or user is not found, return an error
     if (err) {
       return next(err);
     }
+    // If user is not found, return an error message
     if (!user) {
       return res.status(401).json({ message: "Login failed" });
     }
@@ -204,7 +252,9 @@ app.post("/login", (req, res, next) => {
       if (err) {
         return next(err);
       }
+      // Check if the user is an admin
       const isAdmin = user.role === "admin";
+      // Return a success message with user details and admin status
       return res.status(200).json({
         message: "Login successful",
         isAdmin,
@@ -214,6 +264,10 @@ app.post("/login", (req, res, next) => {
   })(req, res, next);
 });
 
+/*
+ * Route to fetch the currently authenticated user's details.
+ * Returns user's personal information if authenticated, otherwise returns unauthorized status.
+ */
 app.get("/api/user", (req, res) => {
   if (req.isAuthenticated()) {
     const user = req.user;
@@ -227,10 +281,15 @@ app.get("/api/user", (req, res) => {
   }
 });
 
+/*
+ * Route to fetch tickets for a specific user.
+ * Retrieves tickets related to the given user ID from the database.
+ */
 app.get("/api/tickets/:userId", async (req, res) => {
   const userId = req.params.userId;
 
   try {
+    // Query to fetch all tickets for the user
     const getTicketsQuery = `
       SELECT Tickets.*, 
              Users.First_Name, 
@@ -248,11 +307,15 @@ app.get("/api/tickets/:userId", async (req, res) => {
   }
 });
 
-// Fetch ticket correspondence
+/*
+ * Route to fetch ticket correspondence for a specific ticket.
+ * Retrieves all messages related to the given ticket ID, ordered by creation date.
+ */
 app.get("/api/ticket-correspondence/:ticketId", async (req, res) => {
   const ticketId = req.params.ticketId;
 
   try {
+    // Query to fetch all messages related to the ticket
     const getCorrespondenceQuery = `
       SELECT Messages.*, Users.First_Name, Users.Second_Name 
       FROM Messages
@@ -267,28 +330,36 @@ app.get("/api/ticket-correspondence/:ticketId", async (req, res) => {
   }
 });
 
-// Add a new correspondence message to a ticket
+/*
+ * Route to add a new message to a ticket.
+ * Inserts a message into the correspondence of a specific ticket.
+ */
 app.post("/api/ticket-correspondence", async (req, res) => {
   const { ticketId, message, sender } = req.body;
 
+  // Check if required fields are provided
   if (!ticketId || !message || !sender) {
     return res
       .status(400)
       .json({ message: "Ticket ID, message, and sender are required" });
   }
 
+  // Check if sender is an admin
   const isAdmin = sender === "IT Support";
 
   try {
+    // Insert the message into the database
     const insertMessageQuery = `
       INSERT INTO Messages (Ticket_ID, Message, Sender)
       VALUES (?, ?, ?)`;
+    // If sender is an admin, set the sender as 'IT Support'
     await db.query(insertMessageQuery, [
       ticketId,
       message,
       isAdmin ? "IT Support" : sender,
     ]);
 
+    // Fetch the newly added message
     const [newMessage] = await db.query(
       "SELECT * FROM Messages WHERE Ticket_ID = ? ORDER BY Created_At DESC LIMIT 1",
       [ticketId]
@@ -300,22 +371,28 @@ app.post("/api/ticket-correspondence", async (req, res) => {
   }
 });
 
-// Submit Ticket
+/*
+ * Route to submit a new ticket.
+ * Creates a new ticket with provided details and associates it with the user.
+ */
 app.post("/submit-ticket", async (req, res) => {
   const { subject, description, category, userId: userIdFromBody } = req.body;
   const userId = req.user ? req.user.User_ID : userIdFromBody;
   const status = "open";
 
+  // Check if required fields are provided
   if (!subject || !description || !category) {
     return res
       .status(400)
       .json({ message: "Subject, description, and category are required" });
   }
 
+  // Check if user ID is provided
   if (!userId) {
     return res.status(400).json({ message: "User ID is required" });
   }
 
+  // Insert the ticket into the database
   try {
     const insertTicketQuery =
       "INSERT INTO Tickets (Subject, Description, Category, Status, User_ID) VALUES (?, ?, ?, ?, ?)";
@@ -332,9 +409,13 @@ app.post("/submit-ticket", async (req, res) => {
   }
 });
 
-// Fetch all tickets for Admins
+/*
+ * Route to fetch all tickets.
+ * Retrieves all tickets from the database, including related user and agent information.
+ */
 app.get("/api/tickets", async (req, res) => {
   try {
+    // Query to fetch all tickets with user and agent details
     const getTicketsQuery = `
       SELECT Tickets.*, 
              Users.First_Name, 
@@ -352,12 +433,17 @@ app.get("/api/tickets", async (req, res) => {
   }
 });
 
-// Update ticket status, priority, and agent
+/*
+ * Route to update a ticket status, priority and agent.
+ * Updates specified fields of a ticket based on the provided ticket ID.
+ */
 app.put("/api/tickets/:ticketId", async (req, res) => {
+  // Get ticket ID and updates from the body
   const ticketId = req.params.ticketId;
   const updates = req.body;
 
   try {
+    // Update the ticket with the provided fields
     const updateTicketQuery = `UPDATE Tickets SET ? WHERE Ticket_ID = ?`;
     await db.query(updateTicketQuery, [updates, ticketId]);
     res.status(200).json({ message: "Ticket updated successfully" });
@@ -366,7 +452,10 @@ app.put("/api/tickets/:ticketId", async (req, res) => {
   }
 });
 
-// Fetch admin users
+/*
+ * Route to fetch all admin users.
+ * Retrieves a list of users with the role 'admin'.
+ */
 app.get("/api/admins", async (req, res) => {
   try {
     const getAdminsQuery = `SELECT User_ID, First_Name, Second_Name FROM Users WHERE Role = 'admin'`;
@@ -377,7 +466,10 @@ app.get("/api/admins", async (req, res) => {
   }
 });
 
-// Create a new remote support ticket
+/*
+ * Route to create a new remote support ticket.
+ * Adds a remote support ticket with provided user ID, AnyDesk ID, and description.
+ */
 app.post("/api/remote-support-tickets", async (req, res) => {
   const { userId, anydeskID, description } = req.body;
 
@@ -400,7 +492,10 @@ app.post("/api/remote-support-tickets", async (req, res) => {
   }
 });
 
-// Fetch all remote support tickets for Admin
+/*
+ * Route to fetch all remote support tickets.
+ * Retrieves all remote support tickets from the database.
+ */
 app.get("/api/remote-support-tickets", async (req, res) => {
   try {
     const getTicketsQuery = `
@@ -415,7 +510,10 @@ app.get("/api/remote-support-tickets", async (req, res) => {
   }
 });
 
-// Update remote support ticket
+/*
+ * Route to update a remote support ticket.
+ * Updates the status of a remote support ticket based on the provided ticket ID.
+ */
 app.put("/api/remote-support-tickets/:ticketId", async (req, res) => {
   const ticketId = req.params.ticketId;
   const { status } = req.body;
@@ -436,6 +534,7 @@ app.put("/api/remote-support-tickets/:ticketId", async (req, res) => {
   }
 });
 
+// Import and use Stripe routes
 const stripeRoutes = require("./stripe");
 
 app.use("/api", stripeRoutes);
@@ -451,6 +550,7 @@ server.listen(PORT, () => {
   console.log(`Server started on http://localhost:${PORT}`);
 });
 
+// Configure Socket to handle chat messages
 io.on("connection", (socket) => {
   socket.on("chat message", (msg) => {
     io.emit("chat message", msg);
